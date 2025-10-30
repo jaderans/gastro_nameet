@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/startscreen.dart';
-import 'startscreen.dart';
 
 void main() {
   runApp(const MyApp());
