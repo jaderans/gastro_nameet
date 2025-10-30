@@ -1,6 +1,6 @@
-# gastro_nameet
+# GASTRONAMEET
 
-A new Flutter project.
+Final project in CC206 - Applications Development
 
 ## Getting Started
 
