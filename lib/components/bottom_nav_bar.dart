@@ -22,7 +22,7 @@ class BottomNavBar extends StatelessWidget {
       iconSize: 28,
       elevation: 10,
       currentIndex: currentIndex,
-      onTap: onTap,
+      onTap:onTap,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
@@ -43,4 +43,5 @@ class BottomNavBar extends StatelessWidget {
       ],
     );
   }
+  
 }

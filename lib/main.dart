@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/startscreen.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const start(), // this redirects the screen to the startscreen
+      home: const MainNavigation(), // this redirects the screen to the startscreen
     );
   }
 }

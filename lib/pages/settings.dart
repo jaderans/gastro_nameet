@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/components/bottom_nav_bar.dart';
-import 'food.dart';
 
-class home extends StatefulWidget {
-  const home({super.key});
+class Settings extends StatefulWidget {
+  const Settings({super.key});
 
   @override
-  State<home> createState() => _homeState();
+  State<Settings> createState() => _SettingsState();
 }
 
-class _homeState extends State<home> {
-  int _currentIndex = 0;
-
+class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +16,8 @@ class _homeState extends State<home> {
         title: const Text('Gastro Nameet'),
       ), // Add this line to use your custom AppBar
       body: Center(
-        child: Text('Home Screen'),
+        child: Text('Settings Screen'),
       ),
     );
   }
 }
-
