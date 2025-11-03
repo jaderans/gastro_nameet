@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
-import 'package:gastro_nameet/pages/startscreen.dart';
-
 void main() {
   runApp(const MyApp());
 }
@@ -16,9 +14,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Gastronameet',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFF7941D),
+        ),
+        useMaterial3: true,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
       ),
-      home: const MainNavigation(), // this redirects the screen to the startscreen
+      home: const MainNavigation(), // this redirects the nav screen
     );
   }
 }

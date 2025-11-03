@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/components/bottom_nav_bar.dart';
-import 'food.dart';
 
 class home extends StatefulWidget {
   const home({super.key});
