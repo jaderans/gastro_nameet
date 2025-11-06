@@ -19,7 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
     home(),
     Food(),
     Save(),
-    Settings(),
+    NotificationsScreen(),
   ];
 
   void _onItemTapped(int index) {
