@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'homescreen.dart';
 
-class start extends StatefulWidget {
-  const start({super.key});
+class Start extends StatefulWidget {
+  const Start({super.key});
 
   @override
-  State<start> createState() => _startState();
+  State<Start> createState() => _StartState();
 }
 
-class _startState extends State<start> {
+class _StartState extends State<Start> {
   @override
   void initState() {
     super.initState();
@@ -17,7 +17,7 @@ class _startState extends State<start> {
     Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => home()),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     });
   }
