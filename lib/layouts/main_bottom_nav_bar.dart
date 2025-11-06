@@ -3,7 +3,7 @@ import '../components/bottom_nav_bar.dart';
 import '../pages/homescreen.dart';
 import '../pages/food.dart';
 import '../pages/save.dart';
-import '../pages/settings.dart';
+import '../pages/notification.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

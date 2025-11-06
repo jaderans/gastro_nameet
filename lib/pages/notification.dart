@@ -13,10 +13,10 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Settings'),
+        title: const Text('Notification'),
       ), // Add this line to use your custom AppBar
       body: Center(
-        child: Text('Settings Screen'),
+        child: Text('Notification Screen'),
       ),
     );
   }

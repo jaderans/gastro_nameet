@@ -20,9 +20,17 @@ class BottomNavBar extends StatelessWidget {
         type: BottomNavigationBarType.fixed, // keeps all labels visible
         backgroundColor: Colors.white, // bar background color
         selectedItemColor: const Color.fromARGB(255, 255, 183, 68), // selected color
-        unselectedItemColor: const Color.fromARGB(255, 84, 84, 84), // unselected color
-        selectedFontSize: 15,
+        unselectedItemColor: const Color.fromARGB(255, 177, 177, 177), // unselected color
+        selectedFontSize: 13,
         unselectedFontSize: 13,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Color.fromARGB(0,0,0,0),
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Color.fromARGB(0,0,0,0),
+        ),
         iconSize: 28,
         elevation: 50,
         currentIndex: currentIndex,
@@ -37,6 +45,7 @@ class BottomNavBar extends StatelessWidget {
                opticalSize: 48,
               ),
             label: 'Home',
+            
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -66,7 +75,7 @@ class BottomNavBar extends StatelessWidget {
                 grade: -25,
                 opticalSize: 48,
             ),
-            label: 'Settings',
+            label: 'Notifications',
           ),
         ],
       ),

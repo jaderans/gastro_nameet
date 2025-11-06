@@ -8,7 +8,7 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
-  int _currentIndex = 0;
+  // int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
