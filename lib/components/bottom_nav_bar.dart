@@ -75,7 +75,7 @@ class BottomNavBar extends StatelessWidget {
                 grade: -25,
                 opticalSize: 48,
             ),
-            label: 'Notifications',
+            label: 'Events',
           ),
         ],
       ),
