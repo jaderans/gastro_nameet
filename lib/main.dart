@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Gastronameet',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFF7941D),
+          seedColor: const Color.fromARGB(255, 184, 168, 149),
         ),
         useMaterial3: true,
         splashColor: Colors.transparent,
