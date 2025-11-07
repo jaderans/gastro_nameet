@@ -13,6 +13,7 @@ class _SaveState extends State<Save> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Save'),
         actions: [

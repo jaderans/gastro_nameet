@@ -16,6 +16,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 140,
+        automaticallyImplyLeading: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30),

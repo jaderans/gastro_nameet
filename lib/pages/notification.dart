@@ -195,6 +195,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 1,
         title: Row(
@@ -202,7 +203,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Icon(Icons.notifications_active, color: mainColor),
             const SizedBox(width: 8),
             Text(
-              'Daily Iloilo Food Highlights',
+              'Highlights',
               style: TextStyle(
                 color: accentColor,
                 fontWeight: FontWeight.bold,
@@ -210,13 +211,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ],
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ProfileButton(),
-          )
-          
-        ],
       ),
       body: notifications.isEmpty
           ? const Center(child: Text("No notifications yet."))
