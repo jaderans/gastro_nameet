@@ -10,7 +10,7 @@ class ProfileButton extends StatefulWidget {
 
 class _ProfileButtonState extends State<ProfileButton> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {  
     return GestureDetector(
       onTap: (){
         Navigator.push(

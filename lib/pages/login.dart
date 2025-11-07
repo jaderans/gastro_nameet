@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:GastroNameet/layouts/main_bottom_nav_bar.dart';
+import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 
 class login extends StatefulWidget {
   const login({super.key});

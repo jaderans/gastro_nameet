@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:GastroNameet/pages/login.dart';
+import 'package:gastro_nameet/pages/login.dart';
 void main() {
   runApp(const MyApp());
 }
