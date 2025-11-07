@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gastro_nameet/components/profile_button.dart';
 // import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Food extends StatefulWidget {
@@ -54,28 +55,50 @@ class _FoodState extends State<Food> {
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 184, 184, 184), 
+                      color: const Color.fromARGB(255, 209, 209, 209), 
                       blurRadius: 15, 
                       offset: const Offset(0, 0),
                         // X and Y offset
                     ),
                   ],
                 ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(30),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search...',
+                          hintStyle: TextStyle(
+                            color: Color(0xFFF7941D),
+                          ),
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.all(8.0), 
+                            child: Image.asset(
+                              'assets/images/gastro_main.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 10), // Small gap between search bar and profile
+
+                    ProfileButton(),
+                  ],
                 ),
               ),
             ),
           ),
+
+
 
           Container(
             alignment: Alignment.bottomRight,
@@ -173,3 +196,4 @@ class _FoodState extends State<Food> {
     );
   }
 }
+

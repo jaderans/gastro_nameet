@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:gastro_nameet/pages/profile_settings.dart';
+
+class ProfileButton extends StatefulWidget {
+  const ProfileButton({super.key});
+
+  @override
+  State<ProfileButton> createState() => _ProfileButtonState();
+}
+
+class _ProfileButtonState extends State<ProfileButton> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+          context, 
+          MaterialPageRoute(builder: (context) => ProfilePage()
+          ),
+        );
+      },
+      child: CircleAvatar(
+          radius: 22,
+          backgroundColor: Colors.grey[200], // placeholder background
+          backgroundImage: AssetImage('assets/images/profile.png'), // profile picture (leave null for now)
+      ),
+    );
+  }
+}

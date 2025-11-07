@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gastro_nameet/components/profile_button.dart';
 
 class Save extends StatefulWidget {
   const Save({super.key});
@@ -14,6 +15,13 @@ class _SaveState extends State<Save> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Save'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ProfileButton(),
+          )
+          
+        ],
       ), // Add this line to use your custom AppBar
       body: Center(
         child: Text('Save Screen'),
