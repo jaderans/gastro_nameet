@@ -13,8 +13,20 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Profile'),
+        backgroundColor: Color(0xFFFFA726),
+        title: Row(children: [
+          Padding(
+            padding: const EdgeInsets.only(right:5),
+            child: Icon(Icons.account_circle, color: Color.fromARGB(255, 255, 255, 255)),
+          ),
+          Text(
+            'Profile',
+            style: TextStyle(
+              fontFamily: 'Talina',
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
+          ),
+        ],),
       ), // Add this line to use your custom AppBar
       body: Center(
         child: Padding(

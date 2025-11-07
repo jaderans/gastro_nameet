@@ -205,8 +205,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Text(
               'Highlights',
               style: TextStyle(
+                fontFamily: 'Talina',
                 color: accentColor,
-                fontWeight: FontWeight.bold,
               ),
             ),
           ],

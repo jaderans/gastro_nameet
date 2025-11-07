@@ -14,8 +14,18 @@ class _SaveState extends State<Save> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Save'),
+        backgroundColor: Color(0xFFFFA726),
+        title: Row(children: [
+          Icon(Icons.bookmark_rounded, color: Color.fromARGB(255, 255, 255, 255)),
+          Text(
+            'Save',
+            style: TextStyle(
+              fontFamily: 'Talina',
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
+          ),
+        ],),
+         
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),

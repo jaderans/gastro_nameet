@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 140,
+        toolbarHeight: 70,
         automaticallyImplyLeading: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -23,8 +23,8 @@ class _HomeState extends State<Home> {
             bottomRight: Radius.circular(30),
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Gastro Nameet'),
+        backgroundColor: Color(0xFFFFA726),
+        title: Image(image: AssetImage('assets/images/gastro_title.png'), height: 30,),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
