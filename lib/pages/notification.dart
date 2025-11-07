@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:gastro_nameet/components/profile_button.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -209,6 +210,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ],
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ProfileButton(),
+          )
+          
+        ],
       ),
       body: notifications.isEmpty
           ? const Center(child: Text("No notifications yet."))
