@@ -210,13 +210,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ],
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ProfileButton(),
-          )
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 16),
+        //     child: ProfileButton(),
+        //   )
           
-        ],
+        // ],
       ),
       body: notifications.isEmpty
           ? const Center(child: Text("No notifications yet."))

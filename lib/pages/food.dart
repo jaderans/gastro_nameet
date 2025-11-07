@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
 // import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -15,6 +16,7 @@ class Food extends StatefulWidget {
 class _FoodState extends State<Food> {
   
   final Completer<GoogleMapController> _controller = Completer(); 
+  late GoogleMapController googleMapController;
   
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(10.728854141969126, 122.55696874742404), // iloilo city
@@ -27,6 +29,39 @@ class _FoodState extends State<Food> {
     
   ); // top-right corner
 
+  Set<Marker> markers = {};
+
+  Future<Position> _determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Check if location services are enabled
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+  if (!serviceEnabled) {
+    // Open location settings if disabled
+    await Geolocator.openLocationSettings();
+    return Future.error('Location services are disabled. Please enable them.');
+  }
+
+  // Check permissions
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return Future.error('Location permissions are denied.');
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    return Future.error(
+      'Location permissions are permanently denied. Please enable them in app settings.',
+    );
+  }
+
+  // Get current position if all is good
+  return await Geolocator.getCurrentPosition();
+}
 
 
   @override
@@ -41,10 +76,12 @@ class _FoodState extends State<Food> {
             mapType: MapType.normal,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
+              googleMapController = controller;
             },
             cameraTargetBounds: CameraTargetBounds(_iloiloBounds),
             rotateGesturesEnabled: true,
             tiltGesturesEnabled: false,
+            markers: markers,
           ),
             
           Container(
@@ -98,8 +135,6 @@ class _FoodState extends State<Food> {
             ),
           ),
 
-
-
           Container(
             alignment: Alignment.bottomRight,
             margin: EdgeInsets.only(top: 600, right: 20),
@@ -111,6 +146,7 @@ class _FoodState extends State<Food> {
                     controller.animateCamera(CameraUpdate.newCameraPosition(_initialPosition));
                   },
                   child: const Icon(Icons.restart_alt),
+                  tooltip: 'Reset camera',
                 ),
                 
                 SizedBox(
@@ -119,17 +155,34 @@ class _FoodState extends State<Food> {
                 
                 FloatingActionButton(
                   onPressed: () async {
-                    final GoogleMapController controller = await _controller.future;
-                    controller.animateCamera(CameraUpdate.newCameraPosition(_initialPosition));
+                    Position position = await _determinePosition();
+
+                    final controller = await _controller.future; // safely get controller
+                    controller.animateCamera(
+                      CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          target: LatLng(position.latitude, position.longitude),
+                          zoom: 15,
+                        ),
+                      ),
+                    );
+
+                    setState(() {
+                      markers.clear();
+                      markers.add(
+                        Marker(
+                          markerId: const MarkerId('currentLocation'),
+                          position: LatLng(position.latitude, position.longitude),
+                        ),
+                      );
+                    });
                   },
                   child: const Icon(Icons.my_location),
+                  tooltip: 'Current Location',
                 ),
               ],
-              
             ),
-            
           ),
-          
           DraggableScrollableSheet(
             initialChildSize: 0.1,   // panel height when minimized
             minChildSize: 0.1,       // minimum height
