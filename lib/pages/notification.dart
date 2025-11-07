@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -12,8 +12,8 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
   final Color mainColor = const Color(0xFFFAAE3B);
   final Color accentColor = const Color(0xFFF7941D);
@@ -69,78 +69,78 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
     tz.initializeTimeZones();
-    _initializeNotifications();
-    _scheduleDailyNotification();
+    // _initializeNotifications();
+    // _scheduleDailyNotification();
   }
 
-  Future<void> _initializeNotifications() async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidInit);
+  // Future<void> _initializeNotifications() async {
+  //   const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+  //   const initSettings = InitializationSettings(android: androidInit);
 
-    await _notificationsPlugin.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse: (response) {
-        final payload = response.payload;
-        if (payload != null) {
-          _openRestaurant(payload);
-        }
-      },
-    );
-  }
+  //   await _notificationsPlugin.initialize(
+  //     initSettings,
+  //     onDidReceiveNotificationResponse: (response) {
+  //       final payload = response.payload;
+  //       if (payload != null) {
+  //         _openRestaurant(payload);
+  //       }
+  //     },
+  //   );
+  // }
 
   /// ⏰ Schedules a daily 8:00 AM restaurant highlight
-  Future<void> _scheduleDailyNotification() async {
-    const androidDetails = AndroidNotificationDetails(
-      'daily_restaurant_channel',
-      'Daily Iloilo Restaurant Highlight',
-      channelDescription: 'Shows a featured local restaurant daily at 8 AM',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+  // Future<void> _scheduleDailyNotification() async {
+  //   const androidDetails = AndroidNotificationDetails(
+  //     'daily_restaurant_channel',
+  //     'Daily Iloilo Restaurant Highlight',
+  //     channelDescription: 'Shows a featured local restaurant daily at 8 AM',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //   );
 
-    const details = NotificationDetails(android: androidDetails);
+  //   const details = NotificationDetails(android: androidDetails);
 
-    final random = Random();
-    final restaurant = restaurants[random.nextInt(restaurants.length)];
+  //   final random = Random();
+  //   final restaurant = restaurants[random.nextInt(restaurants.length)];
 
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduleTime = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      8, // 8:00 AM
-      0,
-    );
+  //   final now = tz.TZDateTime.now(tz.local);
+  //   var scheduleTime = tz.TZDateTime(
+  //     tz.local,
+  //     now.year,
+  //     now.month,
+  //     now.day,
+  //     8, // 8:00 AM
+  //     0,
+  //   );
 
-    if (now.isAfter(scheduleTime)) {
-      scheduleTime = scheduleTime.add(const Duration(days: 1));
-    }
+  //   if (now.isAfter(scheduleTime)) {
+  //     scheduleTime = scheduleTime.add(const Duration(days: 1));
+  //   }
 
-    await _notificationsPlugin.zonedSchedule(
-      0,
-      restaurant["name"],
-      "${restaurant["message"]} Tap to see details.",
-      scheduleTime,
-      details,
-      payload: restaurant["name"],
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
+  //   await _notificationsPlugin.zonedSchedule(
+  //     0,
+  //     restaurant["name"],
+  //     "${restaurant["message"]} Tap to see details.",
+  //     scheduleTime,
+  //     details,
+  //     payload: restaurant["name"],
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //     matchDateTimeComponents: DateTimeComponents.time,
+  //   );
 
-    setState(() {
-      notifications.insert(0, {
-        "title": restaurant["name"]!,
-        "subtitle": restaurant["message"]!,
-        "specialty": restaurant["specialty"]!,
-        "address": restaurant["address"]!,
-        "contact": restaurant["contact"]!,
-        "bestSeller": restaurant["bestSeller"]!,
-        "date":
-            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}",
-      });
-    });
-  }
+  //   setState(() {
+  //     notifications.insert(0, {
+  //       "title": restaurant["name"]!,
+  //       "subtitle": restaurant["message"]!,
+  //       "specialty": restaurant["specialty"]!,
+  //       "address": restaurant["address"]!,
+  //       "contact": restaurant["contact"]!,
+  //       "bestSeller": restaurant["bestSeller"]!,
+  //       "date":
+  //           "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}",
+  //     });
+  //   });
+  // }
 
   void _openRestaurant(String restaurantName) {
     final restaurant = restaurants.firstWhere(
