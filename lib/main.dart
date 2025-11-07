@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
+import 'package:GastroNameet/pages/login.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         highlightColor: Colors.transparent,
         splashFactory: NoSplash.splashFactory,
       ),
-      home: const MainNavigation(), // this redirects the nav screen
+      home: const login(), // this redirects the nav screen
     );
   }
 }
