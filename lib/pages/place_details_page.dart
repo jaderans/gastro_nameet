@@ -83,7 +83,6 @@ class PlaceDetailsPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
 
                   // Rating
                   if (place.rating != null)
@@ -138,7 +137,15 @@ class PlaceDetailsPage extends StatelessWidget {
                       title: const Text('Phone'),
                       subtitle: Text(place.phoneNumber!),
                       onTap: _makePhoneCall,
+                    )
+                  else
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.phone, color: Color(0xFFF7941D)),
+                      title: const Text('Phone'),
+                      subtitle: const Text('Not available'),
                     ),
+                
 
                   // Website
                   if (place.website != null)
@@ -152,27 +159,34 @@ class PlaceDetailsPage extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       onTap: _openWebsite,
+                    )
+                  else
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.language, color: Color(0xFFF7941D)),
+                      title: const Text('Website'),
+                      subtitle: const Text('Not available'),
                     ),
 
                   const SizedBox(height: 24),
 
                   // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _openMaps,
-                          icon: const Icon(Icons.directions),
-                          label: const Text('Get Directions'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF7941D),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: ElevatedButton.icon(
+                  //         onPressed: _openMaps,
+                  //         icon: const Icon(Icons.directions),
+                  //         label: const Text('Get Directions'),
+                  //         style: ElevatedButton.styleFrom(
+                  //           backgroundColor: const Color(0xFFF7941D),
+                  //           foregroundColor: Colors.white,
+                  //           padding: const EdgeInsets.symmetric(vertical: 12),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
