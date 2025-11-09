@@ -313,7 +313,7 @@ class _FoodState extends State<Food> {
                                     )
                                   : null,
                           filled: true,
-                          fillColor: Colors.grey[200],
+                          fillColor: Colors.white,
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
                             borderRadius: BorderRadius.circular(30),
@@ -352,14 +352,14 @@ class _FoodState extends State<Food> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
                         child: Text(
                           suggestion,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Color.fromARGB(199, 0, 0, 0),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -517,6 +517,11 @@ class _FoodState extends State<Food> {
                                     'Closed',
                                     style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                                   )
+                                else
+                                  const Text(
+                                    'No Status Info',
+                                    style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                                  ),
                               ],
                             )
                         ],
