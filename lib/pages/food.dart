@@ -277,14 +277,14 @@ class _FoodState extends State<Food> {
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
-                          hintText: 'Search for food... (e.g., batchoy)',
+                          hintText: 'Search for food...',
                           hintStyle: const TextStyle(
-                            color: Color(0xFFF7941D),
+                            color: Color.fromARGB(255, 167, 167, 167),
                           ),
                           prefixIcon: Padding(
                             padding: const EdgeInsets.all(8.0), 
                             child: Image.asset(
-                              'assets/images/gastro_main.png',
+                              'assets/images/gastro_icon3.png',
                               width: 24,
                               height: 24,
                             ),
