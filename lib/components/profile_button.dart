@@ -22,7 +22,7 @@ class _ProfileButtonState extends State<ProfileButton> {
       child: CircleAvatar(
           radius: 22,
           backgroundColor: Colors.grey[200], // placeholder background
-          backgroundImage: AssetImage('assets/images/profile_placeholder.jpg'), // profile picture (leave null for now)
+          backgroundImage: AssetImage('assets/images/profile_placeholder.jpg'), 
       ),
     );
   }
