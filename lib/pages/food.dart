@@ -19,10 +19,33 @@ class _FoodState extends State<Food> {
   final Completer<GoogleMapController> _controller = Completer();
   final TextEditingController _searchController = TextEditingController();
   final PlacesService _placesService = PlacesService();
-  
+
+  void _addCurrentLocationMarker(Position position) {
+    final currentMarker = Marker(
+      markerId: const MarkerId('currentLocation'),
+      position: LatLng(position.latitude, position.longitude),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+    );
+
+    setState(() {
+      // Remove old current location marker if it exists
+      markers.removeWhere((m) => m.markerId.value == 'currentLocation');
+      markers.add(currentMarker);
+    });
+  } 
+
+  final List<String> suggestions = [
+    'Batchoy',
+    'Inasal',
+    'Lechon',
+    'Pancit',
+    'Halo-Halo',
+    'Kansi',
+  ];
+
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(10.728854141969126, 122.55696874742404),
-    zoom: 10.4746,
+    zoom: 5.4746,
   );
 
   final LatLngBounds _iloiloBounds = LatLngBounds(
@@ -137,9 +160,29 @@ class _FoodState extends State<Food> {
     }
   }
 
-  void _updateMapMarkers(List<Place> places) {
-    markers.clear();
+  // void _updateMapMarkers(List<Place> places) {
+  //   markers.clear();
     
+  //   for (var place in places) {
+  //     markers.add(
+  //       Marker(
+  //         markerId: MarkerId(place.placeId),
+  //         position: LatLng(place.latitude, place.longitude),
+  //         infoWindow: InfoWindow(
+  //           title: place.name,
+  //           snippet: place.address,
+  //         ),
+  //         onTap: () => _onMarkerTapped(place),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  void _updateMapMarkers(List<Place> places) {
+  setState(() {
+    // Remove only search-related markers (keep current location)
+    markers.removeWhere((m) => m.markerId.value != 'currentLocation');
+
     for (var place in places) {
       markers.add(
         Marker(
@@ -153,7 +196,9 @@ class _FoodState extends State<Food> {
         ),
       );
     }
-  }
+  });
+}
+
 
   Future<void> _fitMapToMarkers(List<Place> places) async {
     if (places.isEmpty) return;
@@ -281,8 +326,48 @@ class _FoodState extends State<Food> {
                     const SizedBox(width: 10),
                     const ProfileButton(),
                   ],
+                  
                 ),
               ),
+            ),
+          ),
+
+          // Suggestions bar
+          Container(
+            margin: const EdgeInsets.only(top: 110), // adjust so it's below search bar
+            height: 40,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: suggestions.length,
+              itemBuilder: (context, index) {
+                final suggestion = suggestions[index];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      _searchController.text = suggestion;
+                      _searchPlaces(suggestion); // same as pressing search
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          suggestion,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -299,9 +384,9 @@ class _FoodState extends State<Food> {
                       final GoogleMapController controller = await _controller.future;
                       controller.animateCamera(CameraUpdate.newCameraPosition(_initialPosition));
                       setState(() {
-                        markers.clear();
+                        // markers.clear();
                         searchResults = [];
-                        _searchController.clear();
+                        // _searchController.clear();
                       });
                     },
                     tooltip: 'Reset camera',
@@ -329,19 +414,24 @@ class _FoodState extends State<Food> {
                           ),
                         );
                     
+                        // setState(() {
+                        //   currentPosition = position;
+                        //   markers.clear();
+                        //   markers.add(
+                        //     Marker(
+                        //       markerId: const MarkerId('currentLocation'),
+                        //       position: LatLng(position.latitude, position.longitude),
+                        //       icon: BitmapDescriptor.defaultMarkerWithHue(
+                        //         BitmapDescriptor.hueBlue,
+                        //       ),
+                        //     ),
+                        //   );
+                        // });
                         setState(() {
                           currentPosition = position;
-                          markers.clear();
-                          markers.add(
-                            Marker(
-                              markerId: const MarkerId('currentLocation'),
-                              position: LatLng(position.latitude, position.longitude),
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                BitmapDescriptor.hueBlue,
-                              ),
-                            ),
-                          );
                         });
+                        _addCurrentLocationMarker(position);
+
                       } catch (e) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -415,6 +505,20 @@ class _FoodState extends State<Food> {
                                 Text('${place.rating}'),
                               ],
                             ),
+                            Row(
+                              children: [
+                                if (place.isOpenNow == true) 
+                                  const Text(
+                                    'Open Now',
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                  )
+                                else if (place.isOpenNow == false)
+                                  const Text(
+                                    'Closed',
+                                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                  )
+                              ],
+                            )
                         ],
                       ),
                       onTap: () => _onMarkerTapped(place),
