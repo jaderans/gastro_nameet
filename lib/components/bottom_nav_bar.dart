@@ -24,10 +24,12 @@ class BottomNavBar extends StatelessWidget {
         selectedFontSize: 13,
         unselectedFontSize: 13,
         selectedLabelStyle: TextStyle(
+          fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
           color: Color.fromARGB(0,0,0,0),
         ),
         unselectedLabelStyle: TextStyle(
+          fontFamily: 'Poppins',
           fontWeight: FontWeight.bold,
           color: Color.fromARGB(0,0,0,0),
         ),
@@ -56,6 +58,7 @@ class BottomNavBar extends StatelessWidget {
               opticalSize: 48,
             ),
             label: 'Food',
+
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -66,6 +69,7 @@ class BottomNavBar extends StatelessWidget {
               opticalSize: 48,
             ),
             label: 'Save',
+
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -76,6 +80,7 @@ class BottomNavBar extends StatelessWidget {
                 opticalSize: 48,
             ),
             label: 'Events',
+            
           ),
         ],
       ),

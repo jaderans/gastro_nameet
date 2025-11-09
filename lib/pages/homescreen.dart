@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
-
+import 'package:gastro_nameet/components/horizontal_food_list.dart';
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 70,
+        toolbarHeight: 55,
         automaticallyImplyLeading: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         backgroundColor: Color(0xFFFFA726),
-        title: Image(image: AssetImage('assets/images/gastro_title.png'), height: 30),
+        title: Image(image: AssetImage('assets/images/gastro_icon2.png'), height: 35),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -351,6 +351,48 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
+              HorizontalFoodList(
+                foodItems: [
+                  FoodCardData(
+                    imagePath: 'assets/images/Lapaz-Batchoy-Header.jpg',
+                    title: 'Batchoy',
+                    onTap: () {
+                      print('Batchoy tapped');
+                      // Navigate to detail page
+                    },
+                  ),
+                  FoodCardData(
+                    imagePath: 'assets/images/kbl.jpg',
+                    title: 'KBL',
+                    onTap: () {
+                      print('KBL tapped');
+                    },
+                  ),
+                  FoodCardData(
+                    imagePath: 'assets/images/pnctmolo.jpg',
+                    title: 'Pancit Molo',
+                    onTap: () {
+                      print('Pancit Molo tapped');
+                    },
+                  ),
+                  FoodCardData(
+                    imagePath: 'assets/images/inasal.jpg',
+                    title: 'Inasal',
+                    onTap: () {
+                      print('Inasal tapped');
+                    },
+                  ),
+                  FoodCardData(
+                    imagePath: 'assets/images/biscocho.jpg',
+                    title: 'Biscocho',
+                    onTap: () {
+                      print('Biscocho tapped');
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),

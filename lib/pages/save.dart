@@ -14,6 +14,12 @@ class _SaveState extends State<Save> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+          shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          ),
         backgroundColor: Color(0xFFFFA726),
         title: Row(children: [
           Icon(Icons.bookmark_rounded, color: Color.fromARGB(255, 255, 255, 255)),
