@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
-import 'package:gastro_nameet/pages/signin.dart';
+import 'package:gastro_nameet/pages/startscreen.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class loginstart extends StatefulWidget {
+  const loginstart({super.key});
 
   @override
-  State<login> createState() => _loginState();
+  State<loginstart> createState() => _loginstartState();
 }
 
-class _loginState extends State<login> {
+class _loginstartState extends State<loginstart> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -169,12 +169,12 @@ class _loginState extends State<login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const signin(),
+                            builder: (context) => const start(),
                           ),
                         );
                       },
                       child:
-                      Text("Sign in to another account", style: TextStyle(color: Colors.white)),
+                      Text("< Go Back", style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                         backgroundColor: Color.fromARGB(255, 153, 151, 148),

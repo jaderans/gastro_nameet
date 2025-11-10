@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
-import 'package:gastro_nameet/pages/signin.dart';
+import 'package:gastro_nameet/pages/startscreen.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class signin extends StatefulWidget {
+  const signin({super.key});
 
   @override
-  State<login> createState() => _loginState();
+  State<signin> createState() => _signinState();
 }
 
-class _loginState extends State<login> {
+class _signinState extends State<signin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,18 +20,24 @@ class _loginState extends State<login> {
       body: Stack(
         children: [
           // Background image
-          Positioned(
+          Positioned.fill(
             child: Image.asset(
-              'assets/images/login_bg.png',
+              'assets/images/signin_bg.png',
               fit: BoxFit.cover,
             ),
           ),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(top: 200),
+              padding: const EdgeInsets.only(top: 100),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Image(
+                    image: AssetImage('assets/images/batchoy_welcome.png'),
+                    width: 120,
+                    height: 120,
+                  ),
+                  SizedBox(height: 10),
                   Text(
                     'Maayong Adlaw!',
                     style: TextStyle(
@@ -43,7 +50,7 @@ class _loginState extends State<login> {
                   Padding(
                     padding: const EdgeInsets.only(top: 0, bottom: 3),
                     child: Text(
-                      'LOG IN',
+                      'SIGN UP',
                       style: TextStyle(
                         fontFamily: 'Talina',
                         height: 1,
@@ -54,13 +61,48 @@ class _loginState extends State<login> {
                     ),
                   ),
                   Text(
-                    'Press Log In to continue',
+                    'Press Sign Up to continue',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       height: 1,
                       fontSize: 10,
                       fontWeight: FontWeight.w300,
                       color: Color.fromARGB(255, 166, 166, 166),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 30.0, right: 30.0, top: 20, bottom: 0),
+                    child: Focus(
+                      child: Builder(
+                        builder: (context) {
+                          final hasFocus = Focus.of(context).hasFocus;
+                          return TextFormField(
+                            controller: _nameController,
+                            obscureText: false,
+                            decoration: InputDecoration(
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                              hintText: "Name",
+                              labelText: "Name",
+                              hintStyle: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color.fromARGB(255, 208, 208, 208)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(color: Color(0xFFF7941D)),
+                              ),
+                              labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: hasFocus ? Color(0xFFF7941D) : null,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Padding(
@@ -146,7 +188,7 @@ class _loginState extends State<login> {
                           ),
                         );
                       },
-                      child: Text("Log In", style: TextStyle(color: Colors.white)),
+                      child: Text("Sign up", style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                         backgroundColor: Color(0xFFF7941D),
@@ -169,12 +211,12 @@ class _loginState extends State<login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const signin(),
+                            builder: (context) => const start(),
                           ),
                         );
                       },
                       child:
-                      Text("Sign in to another account", style: TextStyle(color: Colors.white)),
+                      Text("< Go Back", style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                         backgroundColor: Color.fromARGB(255, 153, 151, 148),

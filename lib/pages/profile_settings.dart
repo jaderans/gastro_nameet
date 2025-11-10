@@ -34,8 +34,6 @@ class _ProfilePageState extends State<ProfilePage> {
             left: 25.0, right: 25.0, top: 40, bottom: 0),
           child: ElevatedButton(
             onPressed: () async {
-              // TODO: perform logout actions here (clear tokens, session, etc.)
-              // Navigate to the login screen and remove all previous routes
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const login()),
                 (route) => false,

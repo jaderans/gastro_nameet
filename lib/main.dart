@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/pages/login.dart';
+import 'package:gastro_nameet/pages/startscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,14 +16,14 @@ class MyApp extends StatelessWidget {
       title: 'Gastronameet',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 184, 168, 149),
+          seedColor: const Color.fromARGB(255, 255, 255, 255),
         ),
         useMaterial3: true,
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         splashFactory: NoSplash.splashFactory,
       ),
-      home: const login(), // this redirects the nav screen
+      home: const start(), // this redirects the nav screen
     );
   }
 }
