@@ -45,7 +45,7 @@ class _loginstartState extends State<loginstart> {
                         style: TextStyle(
                           fontFamily: 'Talina',
                           height: 1,
-                          fontSize: screenWidth * 0.045,
+                          fontSize: 23,
                           color: Color(0xFFBC6600),
                         ),
                       ),
@@ -59,7 +59,7 @@ class _loginstartState extends State<loginstart> {
                           style: TextStyle(
                             fontFamily: 'Talina',
                             height: 1,
-                            fontSize: screenWidth * 0.12,
+                            fontSize: screenWidth * .18,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFFFAAD3B),
                           ),
@@ -70,7 +70,7 @@ class _loginstartState extends State<loginstart> {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           height: 1,
-                          fontSize: screenWidth * 0.025,
+                          fontSize: screenWidth * 0.028,
                           fontWeight: FontWeight.w300,
                           color: Color.fromARGB(255, 166, 166, 166),
                         ),

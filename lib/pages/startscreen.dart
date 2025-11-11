@@ -14,6 +14,15 @@ class _startState extends State<start> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final List<String> imagePaths = [
+      'assets/images/Slide 1.png',
+      'assets/images/Slide 2.png',
+      'assets/images/Slide 3.png',
+    ];
+
+    late List<Widget> _pages;
+    _pages = List.generate(imagePaths.length,
+        (index) => ImagePlaceholder(imagePath: imagePaths[index]));
 
     return Scaffold(
       body: Stack(
@@ -44,7 +53,7 @@ class _startState extends State<start> {
                         style: TextStyle(
                           fontFamily: 'Talina',
                           height: 1,
-                          fontSize: screenWidth * 0.045,
+                          fontSize: 23,
                           color: Color(0xFFBC6600),
                         ),
                       ),
@@ -74,11 +83,16 @@ class _startState extends State<start> {
                           color: Color.fromARGB(255, 166, 166, 166),
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.02),
-                      Image(
-                        image: AssetImage('assets/images/batchoy_welcome.png'),
-                        width: screenWidth * 0.5,
-                        height: screenWidth * 0.5,
+                      SizedBox(height: screenHeight * 0.03),
+                      SizedBox(
+                        width: double.infinity,
+                        height: MediaQuery.of(context).size.height / 3,
+                        child: PageView.builder(
+                          itemCount: imagePaths.length,
+                          itemBuilder: (context, index) {
+                            return _pages[index];
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -155,6 +169,19 @@ class _startState extends State<start> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ImagePlaceholder extends StatelessWidget {
+  final String? imagePath;
+  const ImagePlaceholder({super.key, this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      imagePath!,
+      fit: BoxFit.cover,
     );
   }
 }
