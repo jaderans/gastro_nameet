@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "981822235949",
+    "project_id": "gastronameet-4ecfd",
+    "storage_bucket": "gastronameet-4ecfd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:981822235949:android:58ea99839a69933b485fa4",
+        "android_client_info": {
+          "package_name": "com.example.gastro_nameet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq4WWVzN9nf6zEMvth5TpnYFa9c12j-xs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
