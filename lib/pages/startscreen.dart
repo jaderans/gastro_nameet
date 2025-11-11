@@ -12,6 +12,9 @@ class start extends StatefulWidget {
 class _startState extends State<start> {
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -24,56 +27,69 @@ class _startState extends State<start> {
               ),
             ),
           ),
-          // Buttons at the bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+          // Content - Using SafeArea and flexible layout
+          SafeArea(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-              Text(
-                    'Maayong Adlaw!',
-                    style: TextStyle(
-                      fontFamily: 'Talina',
-                      height: 1,
-                      fontSize: 18,
-                      color: Color(0xFFBC6600),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 3),
-                    child: Text(
-                      'This is Gastro Nameet',
-                      style: TextStyle(
-                        fontFamily: 'Talina',
-                        height: 1,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFFAAD3B),
+                // Spacer to push content based on screen height
+                SizedBox(height: screenHeight * 0.15),
+
+                // Main content area - flexible
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Maayong Adlaw!',
+                        style: TextStyle(
+                          fontFamily: 'Talina',
+                          height: 1,
+                          fontSize: screenWidth * 0.045,
+                          color: Color(0xFFBC6600),
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                          bottom: screenHeight * 0.005,
+                        ),
+                        child: Text(
+                          'This is Gastro Nameet',
+                          style: TextStyle(
+                            fontFamily: 'Talina',
+                            height: 1,
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFFFAAD3B),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Craving something authentic?',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          height: 1,
+                          fontSize: screenWidth * 0.025,
+                          fontWeight: FontWeight.w300,
+                          color: Color.fromARGB(255, 166, 166, 166),
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      Image(
+                        image: AssetImage('assets/images/batchoy_welcome.png'),
+                        width: screenWidth * 0.5,
+                        height: screenWidth * 0.5,
+                      ),
+                    ],
                   ),
-                  Text(
-                    'Craving something authentic?',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      height: 1,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w300,
-                      color: Color.fromARGB(255, 166, 166, 166),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Image(
-                    image: AssetImage('assets/images/batchoy_welcome.png'),
-                    width: 200,
-                    height: 200,
-                  ),
-                  SizedBox(height: 100),
+                ),
+
+                // Buttons at the bottom - fixed position
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 30.0, right: 30.0, top: 0, bottom: 30),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.08,
+                    vertical: screenHeight * 0.015,
+                  ),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -83,14 +99,18 @@ class _startState extends State<start> {
                         ),
                       );
                     },
-                    child: Text("Log In", style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      "Log In",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
+                      minimumSize: Size.fromHeight(screenHeight * 0.06),
                       backgroundColor: Color(0xFFF7941D),
                       textStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: screenWidth * 0.038,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -98,8 +118,11 @@ class _startState extends State<start> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 30.0, right: 30.0, top: 0, bottom: 30),
+                  padding: EdgeInsets.only(
+                    left: screenWidth * 0.08,
+                    right: screenWidth * 0.08,
+                    bottom: screenHeight * 0.03,
+                  ),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -109,14 +132,18 @@ class _startState extends State<start> {
                         ),
                       );
                     },
-                    child: Text("Get Started", style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      "Get Started",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
+                      minimumSize: Size.fromHeight(screenHeight * 0.06),
                       backgroundColor: Color.fromARGB(255, 239, 117, 17),
                       textStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: screenWidth * 0.038,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
