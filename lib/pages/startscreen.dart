@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/pages/signin.dart';
 import 'package:gastro_nameet/pages/loginstart.dart';
@@ -10,19 +11,57 @@ class start extends StatefulWidget {
 }
 
 class _startState extends State<start> {
+  late PageController _pageController;
+  late Timer _timer;
+  late List<Widget> _pages;
+
+  final List<String> imagePaths = [
+    'assets/images/Slide 1.png',
+    'assets/images/Slide 2.png',
+    'assets/images/Slide 3.png',
+    'assets/images/Slide 4.png',
+    'assets/images/Slide 5.png',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+    _pages = List.generate(imagePaths.length,
+        (index) => ImagePlaceholder(imagePath: imagePaths[index]));
+    startTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients) {
+        int currentPage = _pageController.page?.round() ?? 0;
+        int nextPage = currentPage + 1;
+
+        if (nextPage >= imagePaths.length) {
+          nextPage = 0;
+        }
+
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final List<String> imagePaths = [
-      'assets/images/Slide 1.png',
-      'assets/images/Slide 2.png',
-      'assets/images/Slide 3.png',
-    ];
-
-    late List<Widget> _pages;
-    _pages = List.generate(imagePaths.length,
-        (index) => ImagePlaceholder(imagePath: imagePaths[index]));
 
     return Scaffold(
       body: Stack(
@@ -31,7 +70,7 @@ class _startState extends State<start> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/startscreen_bg.png'),
+                image: AssetImage('assets/images/startscreen.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -48,46 +87,12 @@ class _startState extends State<start> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Maayong Adlaw!',
-                        style: TextStyle(
-                          fontFamily: 'Talina',
-                          height: 1,
-                          fontSize: 23,
-                          color: Color(0xFFBC6600),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: screenHeight * 0.01,
-                          bottom: screenHeight * 0.005,
-                        ),
-                        child: Text(
-                          'This is Gastro Nameet',
-                          style: TextStyle(
-                            fontFamily: 'Talina',
-                            height: 1,
-                            fontSize: screenWidth * 0.05,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFFAAD3B),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Craving something authentic?',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          height: 1,
-                          fontSize: screenWidth * 0.025,
-                          fontWeight: FontWeight.w300,
-                          color: Color.fromARGB(255, 166, 166, 166),
-                        ),
-                      ),
                       SizedBox(height: screenHeight * 0.03),
                       SizedBox(
                         width: double.infinity,
-                        height: MediaQuery.of(context).size.height / 3,
+                        height: MediaQuery.of(context).size.height / 2.5,
                         child: PageView.builder(
+                          controller: _pageController,
                           itemCount: imagePaths.length,
                           itemBuilder: (context, index) {
                             return _pages[index];
