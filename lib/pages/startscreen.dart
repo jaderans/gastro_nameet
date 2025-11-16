@@ -87,10 +87,48 @@ class _startState extends State<start> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text(
+                        'Maayong Adlaw!',
+                        style: TextStyle(
+                          fontFamily: 'Talina',
+                          height: 1,
+                          fontSize: screenWidth * 0.045,
+                          color: Color(0xFFBC6600),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.01,
+                          bottom: screenHeight * 0.005,
+                        ),
+                        child: Text(
+                          'This is Gastro Nameet',
+                          style: TextStyle(
+                            fontFamily: 'Talina',
+                            height: 1,
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFFFAAD3B),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 60, left: 60),
+                        child: Text(
+                          'Do you crave something authentic?',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            height: 1,
+                            fontSize: screenWidth * 0.025,
+                            fontWeight: FontWeight.w300,
+                            color: Color.fromARGB(255, 166, 166, 166),
+                          ),
+                        ),
+                      ),
                       SizedBox(height: screenHeight * 0.03),
                       SizedBox(
                         width: double.infinity,
-                        height: MediaQuery.of(context).size.height / 2.5,
+                        height: screenHeight * 0.35,
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: imagePaths.length,
