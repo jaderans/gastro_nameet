@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/startscreen.dart';
+import 'package:gastro_nameet/database/database_helper.dart';
 
 class signin extends StatefulWidget {
   const signin({super.key});
@@ -188,15 +189,43 @@ class _signinState extends State<signin> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MainNavigation(),
-                            ),
-                          );
-                        },
+                        ElevatedButton(
+                          onPressed: () async {
+                            String name = _nameController.text.trim();
+                            String email = _emailController.text.trim();
+                            String password = _passwordController.text.trim();
+
+                            if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please fill all fields")),
+                              );
+                              return;
+                            }
+
+                            final data = {
+                              'USER_NAME': name,
+                              'USER_EMAIL': email,
+                              'USER_PASSWORD': password,
+                            };
+
+                            try {
+                              await DBHelper.instance.insertUser(data);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Account created successfully!")),
+                              );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const MainNavigation()),
+                              );
+
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Email already exists or error occurred.")),
+                              );
+                            }
+                          },
                         child: Text("Sign up", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),
