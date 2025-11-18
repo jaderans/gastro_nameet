@@ -1,5 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
 
-FirebaseDatabase getDatabaseInstance() {
-  return FirebaseDatabase.instance;
-}
+// FirebaseDatabase getDatabaseInstance() {
+//   return FirebaseDatabase.instance;
+// }
