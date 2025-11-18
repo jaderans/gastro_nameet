@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
-import 'package:gastro_nameet/pages/startscreen.dart';
+import 'package:gastro_nameet/pages/home/startscreen.dart';
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});

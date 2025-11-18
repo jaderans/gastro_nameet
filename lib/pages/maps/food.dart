@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
 import 'package:gastro_nameet/models/place.dart';
 import 'package:gastro_nameet/services/places_service.dart';
-import 'package:gastro_nameet/pages/place_details_page.dart';
+import 'package:gastro_nameet/pages/maps/place_details_page.dart';
 
 class Food extends StatefulWidget {
   const Food({super.key});

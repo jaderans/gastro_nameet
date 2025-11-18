@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/pages/signin.dart';
-import 'package:gastro_nameet/pages/loginstart.dart';
+import 'package:gastro_nameet/pages/login-signUp/signin.dart';
+import 'package:gastro_nameet/pages/login-signUp/loginstart.dart';
 
 class start extends StatefulWidget {
   const start({super.key});
