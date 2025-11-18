@@ -41,6 +41,7 @@ class _FoodState extends State<Food> {
     'Pancit',
     'Halo-Halo',
     'Kansi',
+    'Batirol',
   ];
 
   static const CameraPosition _initialPosition = CameraPosition(
@@ -142,7 +143,7 @@ class _FoodState extends State<Food> {
       if (places.isNotEmpty) {
         _fitMapToMarkers(places);
       } else {
-        if (mounted) {
+        if (mounted) { 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No places found')),
           );
@@ -159,24 +160,6 @@ class _FoodState extends State<Food> {
       }
     }
   }
-
-  // void _updateMapMarkers(List<Place> places) {
-  //   markers.clear();
-    
-  //   for (var place in places) {
-  //     markers.add(
-  //       Marker(
-  //         markerId: MarkerId(place.placeId),
-  //         position: LatLng(place.latitude, place.longitude),
-  //         infoWindow: InfoWindow(
-  //           title: place.name,
-  //           snippet: place.address,
-  //         ),
-  //         onTap: () => _onMarkerTapped(place),
-  //       ),
-  //     );
-  //   }
-  // }
 
   void _updateMapMarkers(List<Place> places) {
   setState(() {
