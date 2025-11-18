@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
-import 'package:gastro_nameet/pages/signin.dart';
+import 'package:gastro_nameet/pages/home/startscreen.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
 
-class login extends StatefulWidget {
-  const login({super.key});
+class signin extends StatefulWidget {
+  const signin({super.key});
 
   @override
-  State<login> createState() => _loginState();
+  State<signin> createState() => _signinState();
 }
 
-class _loginState extends State<login> {
+class _signinState extends State<signin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class _loginState extends State<login> {
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/login_bg.png',
+              'assets/images/signin_bg.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -40,7 +41,13 @@ class _loginState extends State<login> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: screenHeight * 0.15),
+                      SizedBox(height: screenHeight * 0.08),
+                      Image(
+                        image: AssetImage('assets/images/batchoy_welcome.png'),
+                        width: screenWidth * 0.3,
+                        height: screenWidth * 0.3,
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
                       Text(
                         'Maayong Adlaw!',
                         style: TextStyle(
@@ -56,7 +63,7 @@ class _loginState extends State<login> {
                           bottom: screenHeight * 0.01,
                         ),
                         child: Text(
-                          'LOG IN',
+                          'SIGN UP',
                           style: TextStyle(
                             fontFamily: 'Talina',
                             height: 1,
@@ -67,7 +74,7 @@ class _loginState extends State<login> {
                         ),
                       ),
                       Text(
-                        'Press Log In to continue',
+                        'Press Sign Up to continue',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           height: 1,
@@ -77,6 +84,41 @@ class _loginState extends State<login> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
+                      Focus(
+                        child: Builder(
+                          builder: (context) {
+                            final hasFocus = Focus.of(context).hasFocus;
+                            return TextFormField(
+                              controller: _nameController,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.015,
+                                  horizontal: 10,
+                                ),
+                                hintText: "Name",
+                                labelText: "Name",
+                                hintStyle: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  color: const Color.fromARGB(255, 208, 208, 208),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(color: Color(0xFFF7941D)),
+                                ),
+                                labelStyle: TextStyle(
+                                  fontSize: screenWidth * 0.03,
+                                  color: hasFocus ? Color(0xFFF7941D) : null,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.015),
                       Focus(
                         child: Builder(
                           builder: (context) {
@@ -111,7 +153,7 @@ class _loginState extends State<login> {
                           },
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.015),
                       Focus(
                         child: Builder(
                           builder: (context) {
@@ -147,40 +189,44 @@ class _loginState extends State<login> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      ElevatedButton(
-                        onPressed: () async {
-                          String email = _emailController.text.trim();
-                          String password = _passwordController.text.trim();
+                        ElevatedButton(
+                          onPressed: () async {
+                            String name = _nameController.text.trim();
+                            String email = _emailController.text.trim();
+                            String password = _passwordController.text.trim();
 
-                          if (email.isEmpty || password.isEmpty) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text("Please fill all fields")));
-                            return;
-                          }
+                            if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please fill all fields")),
+                              );
+                              return;
+                            }
 
-                          // Check in database
-                          final user = await DBHelper.instance.loginUser(email, password);
+                            final data = {
+                              'USER_NAME': name,
+                              'USER_EMAIL': email,
+                              'USER_PASSWORD': password,
+                            };
 
-                          if (user == null) {
-                            // Wrong credentials
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Incorrect email or password")),
-                            );
-                            return;
-                          }
+                            try {
+                              await DBHelper.instance.insertUser(data);
 
-                          // SUCCESS
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Login successful! Welcome ${user['USER_NAME']}")),
-                          );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Account created successfully!")),
+                              );
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MainNavigation()),
-                          );
-                        },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const MainNavigation()),
+                              );
 
-                        child: Text("Log In", style: TextStyle(color: Colors.white)),
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Email already exists or error occurred.")),
+                              );
+                            }
+                          },
+                        child: Text("Sign up", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),
                           backgroundColor: Color(0xFFF7941D),
@@ -200,11 +246,11 @@ class _loginState extends State<login> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const signin(),
+                              builder: (context) => const start(),
                             ),
                           );
                         },
-                        child: Text("Sign in to another account", style: TextStyle(color: Colors.white)),
+                        child: Text("< Go Back", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),
                           backgroundColor: Color.fromARGB(255, 153, 151, 148),

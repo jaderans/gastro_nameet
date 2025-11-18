@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
-import '../pages/homescreen.dart';
-import '../pages/food.dart';
-import '../pages/save.dart';
-import '../pages/notification.dart';
+import '../pages/home/homescreen.dart';
+import '../pages/maps/food.dart';
+import '../pages/bookmark/save.dart';
+import '../pages/events/notification.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
