@@ -33,7 +33,7 @@ class _startState extends State<start> {
   }
 
   void startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_pageController.hasClients) {
         int currentPage = _pageController.page?.round() ?? 0;
         int nextPage = currentPage + 1;
