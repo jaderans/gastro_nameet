@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
 import 'package:gastro_nameet/models/place.dart';
 import 'package:gastro_nameet/services/places_service.dart';
-import 'package:gastro_nameet/pages/place_details_page.dart';
+import 'package:gastro_nameet/pages/maps/place_details_page.dart';
 
 class Food extends StatefulWidget {
   const Food({super.key});
@@ -41,6 +41,7 @@ class _FoodState extends State<Food> {
     'Pancit',
     'Halo-Halo',
     'Kansi',
+    'Batirol',
   ];
 
   static const CameraPosition _initialPosition = CameraPosition(
@@ -142,7 +143,7 @@ class _FoodState extends State<Food> {
       if (places.isNotEmpty) {
         _fitMapToMarkers(places);
       } else {
-        if (mounted) {
+        if (mounted) { 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('No places found')),
           );
@@ -159,24 +160,6 @@ class _FoodState extends State<Food> {
       }
     }
   }
-
-  // void _updateMapMarkers(List<Place> places) {
-  //   markers.clear();
-    
-  //   for (var place in places) {
-  //     markers.add(
-  //       Marker(
-  //         markerId: MarkerId(place.placeId),
-  //         position: LatLng(place.latitude, place.longitude),
-  //         infoWindow: InfoWindow(
-  //           title: place.name,
-  //           snippet: place.address,
-  //         ),
-  //         onTap: () => _onMarkerTapped(place),
-  //       ),
-  //     );
-  //   }
-  // }
 
   void _updateMapMarkers(List<Place> places) {
   setState(() {
