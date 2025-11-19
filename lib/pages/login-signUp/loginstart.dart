@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
+import 'package:gastro_nameet/database/database_helper.dart';
+
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});
@@ -147,14 +149,38 @@ class _loginstartState extends State<loginstart> {
                       ),
                       SizedBox(height: screenHeight * 0.03),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          String email = _emailController.text.trim();
+                          String password = _passwordController.text.trim();
+
+                          if (email.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(content: Text("Please fill all fields")));
+                            return;
+                          }
+
+                          // Check in database
+                          final user = await DBHelper.instance.loginUser(email, password);
+
+                          if (user == null) {
+                            // Wrong credentials
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Incorrect email or password")),
+                            );
+                            return;
+                          }
+
+                          // SUCCESS
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Login successful! Welcome ${user['USER_NAME']}")),
+                          );
+
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const MainNavigation(),
-                            ),
+                            MaterialPageRoute(builder: (context) => const MainNavigation()),
                           );
                         },
+
                         child: Text("Log In", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),

@@ -36,12 +36,13 @@ class _FoodState extends State<Food> {
 
   final List<String> suggestions = [
     'Batchoy',
+    'Pancit Molo',
     'Inasal',
     'Lechon',
     'Pancit',
     'Halo-Halo',
     'Kansi',
-    'Batirol',
+    'Butterscotch',
   ];
 
   static const CameraPosition _initialPosition = CameraPosition(
