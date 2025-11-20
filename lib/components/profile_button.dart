@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gastro_nameet/pages/profile_settings.dart';
+import 'package:gastro_nameet/pages/profile/profile_settings.dart';
 
 class ProfileButton extends StatefulWidget {
   const ProfileButton({super.key});

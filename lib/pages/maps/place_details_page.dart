@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/place.dart';
-import '../services/places_service.dart';
+import '../../models/place.dart';
+import '../../services/places_service.dart';
 
 class PlaceDetailsPage extends StatelessWidget {
   final Place place;
