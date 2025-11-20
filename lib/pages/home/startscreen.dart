@@ -70,7 +70,7 @@ class _startState extends State<start> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/startscreen.png'),
+                image: AssetImage('assets/images/startscreen_bg.png'),
                 fit: BoxFit.cover,
               ),
             ),
