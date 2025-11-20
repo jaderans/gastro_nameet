@@ -42,7 +42,7 @@ class _FoodState extends State<Food> {
     'Pancit',
     'Halo-Halo',
     'Kansi',
-    'Butterscotch',
+    'Batirol'
   ];
 
   static const CameraPosition _initialPosition = CameraPosition(
