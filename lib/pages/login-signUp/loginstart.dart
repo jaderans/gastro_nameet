@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});
@@ -154,6 +157,7 @@ class _loginstartState extends State<loginstart> {
                           String password = _passwordController.text.trim();
 
                           if (email.isEmpty || password.isEmpty) {
+<<<<<<< HEAD
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(SnackBar(content: Text("Please fill all fields")));
                             return;
@@ -166,10 +170,15 @@ class _loginstartState extends State<loginstart> {
                             // Wrong credentials
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Incorrect email or password")),
+=======
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please fill all fields")),
+>>>>>>> main
                             );
                             return;
                           }
 
+<<<<<<< HEAD
                           // SUCCESS
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Login successful! Welcome ${user['USER_NAME']}")),
@@ -179,6 +188,27 @@ class _loginstartState extends State<loginstart> {
                             context,
                             MaterialPageRoute(builder: (context) => const MainNavigation()),
                           );
+=======
+                          // Validate login
+                          final user = await DBHelper.instance.loginUser(email, password);
+
+                          if (user != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Welcome back, ${user['USER_NAME']}!")),
+                            );
+
+                            // Clear the entire navigation stack and go to MainNavigation
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MainNavigation()),
+                              (route) => false, // This removes all previous routes
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Invalid email or password")),
+                            );
+                          }
+>>>>>>> main
                         },
 
                         child: Text("Log In", style: TextStyle(color: Colors.white)),

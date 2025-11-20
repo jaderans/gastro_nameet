@@ -189,43 +189,63 @@ class _signinState extends State<signin> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                        ElevatedButton(
-                          onPressed: () async {
-                            String name = _nameController.text.trim();
-                            String email = _emailController.text.trim();
-                            String password = _passwordController.text.trim();
+                      ElevatedButton(
+                        onPressed: () async {
+                          String name = _nameController.text.trim();
+                          String email = _emailController.text.trim();
+                          String password = _passwordController.text.trim();
 
-                            if (name.isEmpty || email.isEmpty || password.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Please fill all fields")),
-                              );
-                              return;
-                            }
+                          if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please fill all fields")),
+                            );
+                            return;
+                          }
 
-                            final data = {
-                              'USER_NAME': name,
-                              'USER_EMAIL': email,
-                              'USER_PASSWORD': password,
-                            };
+                          // Check for duplicate username
+                          bool usernameExists = await DBHelper.instance.usernameExists(name);
+                          if (usernameExists) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Username already exists!")),
+                            );
+                            return;
+                          }
 
-                            try {
-                              await DBHelper.instance.insertUser(data);
+                          // Check for duplicate email
+                          bool emailExists = await DBHelper.instance.emailExists(email);
+                          if (emailExists) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Email already exists!")),
+                            );
+                            return;
+                          }
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Account created successfully!")),
-                              );
+                          final data = {
+                            'USER_NAME': name,
+                            'USER_EMAIL': email,
+                            'USER_PASSWORD': password,
+                          };
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const MainNavigation()),
-                              );
+                          try {
+                            await DBHelper.instance.insertUser(data);
 
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Email already exists or error occurred.")),
-                              );
-                            }
-                          },
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Account created successfully!")),
+                            );
+
+                            // Clear navigation stack and go to MainNavigation
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MainNavigation()),
+                              (route) => false, // Remove all previous routes
+                            );
+
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error occurred: $e")),
+                            );
+                          }
+                        },
                         child: Text("Sign up", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),

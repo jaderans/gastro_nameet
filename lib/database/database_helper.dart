@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
 
 class DBHelper {
   static final DBHelper instance = DBHelper._init();
@@ -9,13 +11,34 @@ class DBHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('gatro_db.db');
+    _database = await _initDB('gastro_db.db');
     return _database!;
   }
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
+
+    // Check if database exists
+    final exists = await databaseExists(path);
+
+    if (!exists) {
+      // Copy from assets
+      try {
+        // Make sure the parent directory exists
+        await Directory(dirname(path)).create(recursive: true);
+
+        // Load database from asset and copy
+        ByteData data = await rootBundle.load('assets/database/$filePath');
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+        // Write to file
+        await File(path).writeAsBytes(bytes, flush: true);
+        print('Database copied from assets to $path');
+      } catch (e) {
+        print('Error copying database: $e');
+      }
+    }
 
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
@@ -38,22 +61,42 @@ class DBHelper {
     return await db.insert('USER', row);
   }
 
-  // LOGIN FUNCTION
-Future<Map<String, dynamic>?> loginUser(String email, String password) async {
-  final db = await instance.database;
-
-  final result = await db.query(
-    'USER',
-    where: 'USER_EMAIL = ? AND USER_PASSWORD = ?',
-    whereArgs: [email, password],
-  );
-
-  if (result.isNotEmpty) {
-    return result.first; // user found
+  // Check if email exists (for duplicate validation)
+  Future<bool> emailExists(String email) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'USER',
+      where: 'USER_EMAIL = ?',
+      whereArgs: [email],
+    );
+    return result.isNotEmpty;
   }
 
-  return null; // no user found
-}
+  // Check if username exists (for duplicate validation)
+  Future<bool> usernameExists(String username) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'USER',
+      where: 'USER_NAME = ?',
+      whereArgs: [username],
+    );
+    return result.isNotEmpty;
+  }
 
+  // LOGIN FUNCTION
+  Future<Map<String, dynamic>?> loginUser(String email, String password) async {
+    final db = await instance.database;
 
+    final result = await db.query(
+      'USER',
+      where: 'USER_EMAIL = ? AND USER_PASSWORD = ?',
+      whereArgs: [email, password],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first; // user found
+    }
+
+    return null; // no user found
+  }
 }
