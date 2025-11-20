@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
+import 'package:gastro_nameet/database/database_helper.dart';
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});
@@ -147,13 +148,36 @@ class _loginstartState extends State<loginstart> {
                       ),
                       SizedBox(height: screenHeight * 0.03),
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MainNavigation(),
-                            ),
-                          );
+                        onPressed: () async {
+                          String email = _emailController.text.trim();
+                          String password = _passwordController.text.trim();
+
+                          if (email.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please fill all fields")),
+                            );
+                            return;
+                          }
+
+                          // Validate login
+                          final user = await DBHelper.instance.loginUser(email, password);
+
+                          if (user != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Welcome back, ${user['USER_NAME']}!")),
+                            );
+
+                            // Clear the entire navigation stack and go to MainNavigation
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MainNavigation()),
+                              (route) => false, // This removes all previous routes
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Invalid email or password")),
+                            );
+                          }
                         },
                         child: Text("Log In", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
