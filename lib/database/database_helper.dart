@@ -92,6 +92,19 @@ class DBHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS BOOKMARK (
+        BM_ID INTEGER PRIMARY KEY,
+        BM_DATE TEXT,
+        BM_PLACE_NAME TEXT,
+        BM_ADDRESS TEXT,
+        BM_LAT REAL,
+        BM_LNG REAL,
+        BM_RATING REAL,
+        BM_IMG TEXT
+      )
+    ''');
+
     print('✅ Tables created successfully');
   }
 
@@ -127,6 +140,29 @@ class DBHelper {
       print('⚠️ Error verifying database: $e');
     }
   }
+
+// BOOKMARK CRUD START
+  Future<int> insertBookmark(Map<String, dynamic> row) async {
+    final db = await instance.database;
+    return await db.insert('BOOKMARK', row);
+  }
+
+  Future<List<Map<String, dynamic>>> getAllBookmarks() async {
+    final db = await instance.database;
+    return await db.query('BOOKMARK');
+  }
+
+  Future<int> deleteBookmark(int bmId) async {
+    final db = await instance.database;
+    return await db.delete(
+      'BOOKMARK',
+      where: 'BM_ID = ?',
+      whereArgs: [bmId],
+    );
+  } 
+
+//BOOKMARK CRUD END
+
 
   Future<void> _populateData(Database db) async {
     print('📥 Populating database with food data...');
