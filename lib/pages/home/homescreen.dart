@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
 import 'package:gastro_nameet/components/horizontal_food_list.dart';
+import 'package:gastro_nameet/pages/specialties/breakfast.dart';
+import 'package:gastro_nameet/pages/specialties/lunch.dart';
+import 'package:gastro_nameet/pages/specialties/dinner.dart';
+import 'package:gastro_nameet/pages/specialties/snacks.dart';
+import 'package:gastro_nameet/pages/specialties/soup.dart';
+import 'package:gastro_nameet/pages/specialties/dessert.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -157,64 +164,108 @@ class _HomeState extends State<Home> {
           ),
               SizedBox(height: 10),
               GridView.count(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              childAspectRatio: 2,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                {'label': 'Breakfast', 'icon': Icons.free_breakfast},
-                {'label': 'Lunch', 'icon': Icons.lunch_dining},
-                {'label': 'Dinner', 'icon': Icons.dinner_dining},
-                {'label': 'Snacks', 'icon': Icons.fastfood},
-                {'label': 'Soup', 'icon': Icons.ramen_dining},
-                {'label': 'Desserts', 'icon': Icons.icecream},
-              ].map((item) {
-                return InkWell(
-                onTap: () {
-                  print('${item['label']} tapped');
-                },
-                borderRadius: BorderRadius.circular(15),
-                child: Container(
-                  decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                    color: const Color.fromARGB(255, 113, 101, 89).withOpacity(0.15),
-                    spreadRadius: 1,
-                    blurRadius: 6,
-                    offset: Offset(0, 3),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 3,
+                childAspectRatio: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  {'label': 'Breakfast', 'icon': Icons.free_breakfast},
+                  {'label': 'Lunch', 'icon': Icons.lunch_dining},
+                  {'label': 'Dinner', 'icon': Icons.dinner_dining},
+                  {'label': 'Snacks', 'icon': Icons.fastfood},
+                  {'label': 'Soup', 'icon': Icons.ramen_dining},
+                  {'label': 'Desserts', 'icon': Icons.icecream},
+                ].map((item) {
+                  return InkWell(
+                    onTap: () {
+                      switch (item['label']) {
+                        case 'Breakfast':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => spbreakfast()),
+                          );
+                          break;
+
+                        case 'Lunch':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => splunch()),
+                          );
+                          break;
+
+                        case 'Dinner':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => spdinner()),
+                          );
+                          break;
+
+                        case 'Snacks':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => spsnacks()),
+                          );
+                          break;
+
+                        case 'Soup':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => spsoup()),
+                          );
+                          break;
+
+                        case 'Desserts':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => spdessert()),
+                          );
+                          break;
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(15),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                const Color.fromARGB(255, 113, 101, 89).withOpacity(0.15),
+                            spreadRadius: 1,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            item['icon'] as IconData,
+                            size: 20,
+                            color: Color(0xFFFFA726),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            item['label'] as String,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'poppins',
+                              fontSize: 8,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                  ),
-                  child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                    item['icon'] as IconData,
-                    size: 20,
-                    color: Color(0xFFFFA726),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                    item['label'] as String,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'poppins',
-                      fontSize: 8,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF333333),
-                    ),
-                    ),
-                  ],
-                  ),
-                ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
               ),
+
               SizedBox(height: 20),
               Padding(
               padding: const EdgeInsets.only(top: 0, left: 20.0, right: 20.0, bottom: 10.0),
