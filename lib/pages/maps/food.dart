@@ -54,7 +54,6 @@ class _FoodState extends State<Food> {
   setState(() {});
   }
 
-
   final List<String> suggestions = [
     'Batchoy',
     'Pancit Molo',
@@ -191,7 +190,7 @@ class _FoodState extends State<Food> {
     // Remove only search-related markers (keep current location)
     markers.removeWhere((m) => m.markerId.value != 'currentLocation');
 
-  // marker fro food places
+    // marker fro food places
     for (var place in places) {
       markers.add(
         Marker(
@@ -205,18 +204,6 @@ class _FoodState extends State<Food> {
           onTap: () => _onMarkerTapped(place),
         ),
       );
-
-      // markers.add(
-      //   Marker(
-      //     markerId: MarkerId(place.placeId),
-      //     position: LatLng(place.latitude, place.longitude),
-      //     infoWindow: InfoWindow(
-      //       title: place.name,
-      //       snippet: place.address,
-      //     ),
-      //     onTap: () => _onMarkerTapped(place),
-      //   ),
-      // );
     }
   });
 }

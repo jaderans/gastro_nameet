@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});
@@ -157,38 +153,12 @@ class _loginstartState extends State<loginstart> {
                           String password = _passwordController.text.trim();
 
                           if (email.isEmpty || password.isEmpty) {
-<<<<<<< HEAD
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text("Please fill all fields")));
-                            return;
-                          }
-
-                          // Check in database
-                          final user = await DBHelper.instance.loginUser(email, password);
-
-                          if (user == null) {
-                            // Wrong credentials
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Incorrect email or password")),
-=======
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Please fill all fields")),
->>>>>>> main
                             );
                             return;
                           }
 
-<<<<<<< HEAD
-                          // SUCCESS
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Login successful! Welcome ${user['USER_NAME']}")),
-                          );
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MainNavigation()),
-                          );
-=======
                           // Validate login
                           final user = await DBHelper.instance.loginUser(email, password);
 
@@ -208,7 +178,6 @@ class _loginstartState extends State<loginstart> {
                               SnackBar(content: Text("Invalid email or password")),
                             );
                           }
->>>>>>> main
                         },
 
                         child: Text("Log In", style: TextStyle(color: Colors.white)),
