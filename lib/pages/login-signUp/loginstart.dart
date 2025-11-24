@@ -164,7 +164,7 @@ class _loginstartState extends State<loginstart> {
 
                           if (user != null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Welcome back, ${user['USER_NAME']}!")),
+                              SnackBar(content: Text("Welcome, ${user['USER_NAME']}!")),
                             );
 
                             // Clear the entire navigation stack and go to MainNavigation
