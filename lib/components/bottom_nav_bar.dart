@@ -68,7 +68,7 @@ class BottomNavBar extends StatelessWidget {
               grade: -25,
               opticalSize: 48,
             ),
-            label: 'Save',
+            label: 'Activities',
 
           ),
           BottomNavigationBarItem(

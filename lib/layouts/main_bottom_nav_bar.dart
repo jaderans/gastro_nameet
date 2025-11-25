@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../pages/home/homescreen.dart';
 import '../pages/maps/food.dart';
-import '../pages/bookmark/bookmark_display.dart';
+import '../pages/activities/bookmark_display.dart';
 import '../pages/events/notification.dart';
+import '../pages/activities/comments_display.dart';
+
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,7 +20,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = const [
     Home(),
     Food(),
-    Save(),
+    Bookmark(),
     NotificationsScreen(),
   ];
 

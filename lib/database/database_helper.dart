@@ -92,6 +92,7 @@ class DBHelper {
       )
     ''');
 
+    // Creates table for BOOKMARK
     await db.execute('''
       CREATE TABLE IF NOT EXISTS BOOKMARK (
         BM_ID INTEGER PRIMARY KEY,
@@ -101,7 +102,22 @@ class DBHelper {
         BM_LAT REAL,
         BM_LNG REAL,
         BM_RATING REAL,
-        BM_IMG TEXT
+        BM_IMG TEXT,
+        USER_ID INTEGER,
+        FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
+      )
+    ''');
+
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS COMMENTS (
+        REV_ID INTEGER PRIMARY KEY,
+        REV_DATE TEXT,
+        REV_DESC TEXT,
+        REV_LAT REAL,
+        REV_LNG REAL,
+        REV_PLACE_NAME TEXT,
+        USER_ID INTEGER,
+        FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
       )
     ''');
 
@@ -140,6 +156,66 @@ class DBHelper {
       print('⚠️ Error verifying database: $e');
     }
   }
+
+// Add these methods to your DBHelper class in database_helper.dart
+
+// Insert a new comment
+Future<int> insertComment(Map<String, dynamic> comment) async {
+  final db = await database;
+  return await db.insert('COMMENTS', comment);
+}
+
+// Get all comments
+Future<List<Map<String, dynamic>>> getAllComments() async {
+  final db = await database;
+  return await db.query(
+    'COMMENTS',
+    orderBy: 'REV_DATE DESC',
+  );
+}
+
+// Get comments by user ID
+Future<List<Map<String, dynamic>>> getCommentsByUser(int userId) async {
+  final db = await database;
+  return await db.query(
+    'COMMENTS',
+    where: 'USER_ID = ?',
+    whereArgs: [userId],
+    orderBy: 'REV_DATE DESC',
+  );
+}
+
+// Get comments by place name
+Future<List<Map<String, dynamic>>> getCommentsByPlace(String placeName) async {
+  final db = await database;
+  return await db.query(
+    'COMMENTS',
+    where: 'REV_PLACE_NAME = ?',
+    whereArgs: [placeName],
+    orderBy: 'REV_DATE DESC',
+  );
+}
+
+// Update a comment
+Future<int> updateComment(int revId, Map<String, dynamic> comment) async {
+  final db = await database;
+  return await db.update(
+    'COMMENTS',
+    comment,
+    where: 'REV_ID = ?',
+    whereArgs: [revId],
+  );
+}
+
+// Delete a comment
+Future<int> deleteComment(int revId) async {
+  final db = await database;
+  return await db.delete(
+    'COMMENTS',
+    where: 'REV_ID = ?',
+    whereArgs: [revId],
+  );
+}
 
 // BOOKMARK CRUD START
   Future<int> insertBookmark(Map<String, dynamic> row) async {
