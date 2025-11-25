@@ -20,7 +20,9 @@ class _FoodState extends State<Food> {
   final TextEditingController _searchController = TextEditingController();
   final PlacesService _placesService = PlacesService();
 
-//current location marker
+  bool _hasProcessedArguments = false;
+
+  //current location marker
   void _addCurrentLocationMarker(Position position) {
     final currentMarker = Marker(
       markerId: const MarkerId('currentLocation'),
@@ -38,20 +40,20 @@ class _FoodState extends State<Food> {
   BitmapDescriptor? customIcon;
 
   Future<void> _loadCustomMarker() async {
-  customIcon = await BitmapDescriptor.asset(
-    const ImageConfiguration(size: Size(40, 40)),
-    'assets/images/loc_food.png',
-  );
-  setState(() {});
+    customIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(40, 40)),
+      'assets/images/loc_food.png',
+    );
+    setState(() {});
   }
 
   BitmapDescriptor? customUserIcon;
   Future<void> _loadCustomMarkerUserPosition() async {
-  customUserIcon = await BitmapDescriptor.asset(
-    const ImageConfiguration(size: Size(50, 50)),
-    'assets/images/loc_main.png',
-  );
-  setState(() {});
+    customUserIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(50, 50)),
+      'assets/images/loc_main.png',
+    );
+    setState(() {});
   }
 
   final List<String> suggestions = [
@@ -88,6 +90,48 @@ class _FoodState extends State<Food> {
     _loadCustomMarkerUserPosition();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Process route arguments only once
+    if (!_hasProcessedArguments) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      
+      if (args != null && args['searchQuery'] != null) {
+        _hasProcessedArguments = true;
+        
+        // Set the search text
+        _searchController.text = args['searchQuery'];
+        
+        // Perform the search after a short delay to ensure map is ready
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _searchPlaces(args['searchQuery']);
+          
+          // If coordinates are provided, move camera to that location
+          if (args['latitude'] != null && args['longitude'] != null) {
+            _moveCameraToLocation(args['latitude'], args['longitude']);
+          }
+        });
+      }
+    }
+  }
+
+  Future<void> _moveCameraToLocation(double lat, double lng) async {
+    try {
+      final controller = await _controller.future;
+      controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, lng),
+            zoom: 16,
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error moving camera: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -186,28 +230,27 @@ class _FoodState extends State<Food> {
   }
 
   void _updateMapMarkers(List<Place> places) {
-  setState(() {
-    // Remove only search-related markers (keep current location)
-    markers.removeWhere((m) => m.markerId.value != 'currentLocation');
+    setState(() {
+      // Remove only search-related markers (keep current location)
+      markers.removeWhere((m) => m.markerId.value != 'currentLocation');
 
-    // marker fro food places
-    for (var place in places) {
-      markers.add(
-        Marker(
-          markerId: MarkerId(place.placeId),
-          position: LatLng(place.latitude, place.longitude),
-          icon: customIcon ?? BitmapDescriptor.defaultMarker,
-          infoWindow: InfoWindow(
-            title: place.name,
-            snippet: place.address,
+      // marker for food places
+      for (var place in places) {
+        markers.add(
+          Marker(
+            markerId: MarkerId(place.placeId),
+            position: LatLng(place.latitude, place.longitude),
+            icon: customIcon ?? BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(
+              title: place.name,
+              snippet: place.address,
+            ),
+            onTap: () => _onMarkerTapped(place),
           ),
-          onTap: () => _onMarkerTapped(place),
-        ),
-      );
-    }
-  });
-}
-
+        );
+      }
+    });
+  }
 
   Future<void> _fitMapToMarkers(List<Place> places) async {
     if (places.isEmpty) return;
@@ -423,19 +466,6 @@ class _FoodState extends State<Food> {
                           ),
                         );
                     
-                        // setState(() {
-                        //   currentPosition = position;
-                        //   markers.clear();
-                        //   markers.add(
-                        //     Marker(
-                        //       markerId: const MarkerId('currentLocation'),
-                        //       position: LatLng(position.latitude, position.longitude),
-                        //       icon: BitmapDescriptor.defaultMarkerWithHue(
-                        //         BitmapDescriptor.hueBlue,
-                        //       ),
-                        //     ),
-                        //   );
-                        // });
                         setState(() {
                           currentPosition = position;
                         });
