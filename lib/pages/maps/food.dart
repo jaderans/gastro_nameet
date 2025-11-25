@@ -20,11 +20,12 @@ class _FoodState extends State<Food> {
   final TextEditingController _searchController = TextEditingController();
   final PlacesService _placesService = PlacesService();
 
+//current location marker
   void _addCurrentLocationMarker(Position position) {
     final currentMarker = Marker(
       markerId: const MarkerId('currentLocation'),
       position: LatLng(position.latitude, position.longitude),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      icon: customUserIcon ?? BitmapDescriptor.defaultMarker,
     );
 
     setState(() {
@@ -34,14 +35,34 @@ class _FoodState extends State<Food> {
     });
   } 
 
+  BitmapDescriptor? customIcon;
+
+  Future<void> _loadCustomMarker() async {
+  customIcon = await BitmapDescriptor.asset(
+    const ImageConfiguration(size: Size(40, 40)),
+    'assets/images/loc_food.png',
+  );
+  setState(() {});
+  }
+
+  BitmapDescriptor? customUserIcon;
+  Future<void> _loadCustomMarkerUserPosition() async {
+  customUserIcon = await BitmapDescriptor.asset(
+    const ImageConfiguration(size: Size(50, 50)),
+    'assets/images/loc_main.png',
+  );
+  setState(() {});
+  }
+
   final List<String> suggestions = [
     'Batchoy',
+    'Pancit Molo',
     'Inasal',
     'Lechon',
     'Pancit',
     'Halo-Halo',
     'Kansi',
-    'Batirol',
+    'Batirol'
   ];
 
   static const CameraPosition _initialPosition = CameraPosition(
@@ -63,7 +84,10 @@ class _FoodState extends State<Food> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _loadCustomMarker();
+    _loadCustomMarkerUserPosition();
   }
+
 
   @override
   void dispose() {
@@ -166,11 +190,13 @@ class _FoodState extends State<Food> {
     // Remove only search-related markers (keep current location)
     markers.removeWhere((m) => m.markerId.value != 'currentLocation');
 
+    // marker fro food places
     for (var place in places) {
       markers.add(
         Marker(
           markerId: MarkerId(place.placeId),
           position: LatLng(place.latitude, place.longitude),
+          icon: customIcon ?? BitmapDescriptor.defaultMarker,
           infoWindow: InfoWindow(
             title: place.name,
             snippet: place.address,

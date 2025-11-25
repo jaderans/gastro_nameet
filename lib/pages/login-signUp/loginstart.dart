@@ -179,6 +179,7 @@ class _loginstartState extends State<loginstart> {
                             );
                           }
                         },
+
                         child: Text("Log In", style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(screenHeight * 0.06),

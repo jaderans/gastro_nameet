@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
 import '../pages/home/homescreen.dart';
 import '../pages/maps/food.dart';
-import '../pages/bookmark/save.dart';
+import '../pages/bookmark/bookmark_display.dart';
 import '../pages/events/notification.dart';
 
 class MainNavigation extends StatefulWidget {
