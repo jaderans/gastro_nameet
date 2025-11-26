@@ -119,6 +119,17 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
           'BM_DATE': DateTime.now().toString(),
         };
 
+        // If the Place has photos, save the first photo URL so activity cards
+        // can show the same image as the place details without extra lookups.
+        if (widget.place.photos != null && widget.place.photos!.isNotEmpty) {
+          try {
+            bookmarkRow['BM_IMG'] = widget.place.photos!.first.getPhotoUrl(PlacesService.apiKey, maxWidth: 400);
+          } catch (e) {
+            // ignore photo extraction errors and continue without an image
+            print('Error extracting place photo for bookmark: $e');
+          }
+        }
+
         if (_currentUserId != null) {
           bookmarkRow['USER_ID'] = _currentUserId!;
         }
@@ -225,6 +236,15 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         'REV_LNG': widget.place.longitude,
         'REV_PLACE_NAME': widget.place.name,
       };
+
+      // Save the first Places API photo URL with the comment (if available)
+      if (widget.place.photos != null && widget.place.photos!.isNotEmpty) {
+        try {
+          commentRow['REV_IMG'] = widget.place.photos!.first.getPhotoUrl(PlacesService.apiKey, maxWidth: 400);
+        } catch (e) {
+          print('Error extracting place photo for comment: $e');
+        }
+      }
 
       if (_currentUserId != null) {
         commentRow['USER_ID'] = _currentUserId!;

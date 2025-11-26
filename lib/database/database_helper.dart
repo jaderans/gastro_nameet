@@ -114,10 +114,23 @@ class DBHelper {
         REV_LAT REAL,
         REV_LNG REAL,
         REV_PLACE_NAME TEXT,
+        REV_IMG TEXT,
         USER_ID INTEGER,
         FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
       )
     ''');
+
+      // Ensure COMMENTS table has REV_IMG column for older databases
+      try {
+        final commentCols = await db.rawQuery("PRAGMA table_info('COMMENTS')");
+        final columnNames = commentCols.map((c) => c['name'] as String?).whereType<String>().toList();
+        if (!columnNames.contains('REV_IMG')) {
+          print('🔧 Adding missing column REV_IMG to COMMENTS (onOpen)');
+          await db.execute('ALTER TABLE COMMENTS ADD COLUMN REV_IMG TEXT');
+        }
+      } catch (e) {
+        print('⚠️ Failed to ensure REV_IMG column exists in _ensureTablesExist: $e');
+      }
 
       print('✅ Ensured required tables exist');
     } catch (e) {
@@ -184,10 +197,23 @@ class DBHelper {
         REV_LAT REAL,
         REV_LNG REAL,
         REV_PLACE_NAME TEXT,
+        REV_IMG TEXT,
         USER_ID INTEGER,
         FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
       )
     ''');
+
+    // Ensure COMMENTS table has REV_IMG column for older databases
+    try {
+      final commentCols = await db.rawQuery("PRAGMA table_info('COMMENTS')");
+      final columnNames = commentCols.map((c) => c['name'] as String?).whereType<String>().toList();
+      if (!columnNames.contains('REV_IMG')) {
+        print('🔧 Adding missing column REV_IMG to COMMENTS');
+        await db.execute('ALTER TABLE COMMENTS ADD COLUMN REV_IMG TEXT');
+      }
+    } catch (e) {
+      print('⚠️ Failed to ensure REV_IMG column exists: $e');
+    }
 
     print('✅ Tables created successfully');
   }
