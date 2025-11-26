@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
+import 'package:gastro_nameet/services/auth_service.dart';
 
 class signin extends StatefulWidget {
   const signin({super.key});
@@ -227,7 +228,14 @@ class _signinState extends State<signin> {
                           };
 
                           try {
-                            await DBHelper.instance.insertUser(data);
+                            final newId = await DBHelper.instance.insertUser(data);
+
+                            // Persist current user
+                            await AuthService.instance.setCurrentUser(
+                              userId: newId,
+                              name: name,
+                              email: email,
+                            );
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Account created successfully!")),

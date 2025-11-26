@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/components/profile_button.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
+import 'package:gastro_nameet/services/auth_service.dart';
 import 'package:gastro_nameet/components/bookmark_comments_nav.dart';
 import 'package:gastro_nameet/pages/maps/food.dart';
 
@@ -12,19 +13,29 @@ class Bookmark extends StatefulWidget {
 }
 
 class _BookmarkState extends State<Bookmark> {
-  late Future<List<Map<String, dynamic>>> _bookmarksFuture;
+  Future<List<Map<String, dynamic>>> _bookmarksFuture = Future.value(<Map<String, dynamic>>[]);
+  int? _currentUserId;
 
   String _selectedSort = "Name (A-Z)"; // sorting option
 
   @override
   void initState() {
     super.initState();
+    _initAndRefresh();
+  }
+
+  Future<void> _initAndRefresh() async {
+    _currentUserId = await AuthService.instance.getCurrentUserId();
     _refreshBookmarks();
   }
 
   void _refreshBookmarks() {
     setState(() {
-      _bookmarksFuture = DBHelper.instance.getAllBookmarks();
+      if (_currentUserId != null) {
+        _bookmarksFuture = DBHelper.instance.getBookmarksByUser(_currentUserId!);
+      } else {
+        _bookmarksFuture = DBHelper.instance.getAllBookmarks();
+      }
     });
   }
 
@@ -240,35 +251,57 @@ class _BookmarkState extends State<Bookmark> {
                             ),
                           ],
                         ),
-                        leading: Icon(Icons.bookmark_rounded,
-                            color: Color(0xFFFFA726)),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Delete Bookmark?'),
-                                content: Text(
-                                    'Are you sure you want to delete this bookmark?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('Cancel'),
+                        leading: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.grey[200],
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: bookmark['BM_IMG'] != null && (bookmark['BM_IMG'] as String).isNotEmpty
+                              ? Image.network(
+                                  bookmark['BM_IMG'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                                    'assets/images/profile_placeholder.png',
+                                    fit: BoxFit.cover,
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _deleteBookmark(bookmark['BM_ID'], index);
-                                    },
-                                    child: Text('Delete',
-                                        style: TextStyle(color: Colors.red)),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                )
+                              : Image.asset(
+                                  'assets/images/profile_placeholder.png',
+                                  fit: BoxFit.cover,
+                                ),
                         ),
+                        trailing: (_currentUserId != null && bookmark['USER_ID'] == _currentUserId)
+                            ? IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Delete Bookmark?'),
+                                      content: Text(
+                                          'Are you sure you want to delete this bookmark?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _deleteBookmark(bookmark['BM_ID'], index);
+                                          },
+                                          child: Text('Delete',
+                                              style: TextStyle(color: Colors.red)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                            : SizedBox.shrink(),
                       ),
                     );
                   },

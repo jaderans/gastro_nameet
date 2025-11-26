@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
+import 'package:gastro_nameet/services/auth_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.instance.init();
   runApp(const MyApp());
 }
 

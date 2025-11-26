@@ -19,11 +19,11 @@ class _ProfileButtonState extends State<ProfileButton> {
           ),
         );
       },
-      child: CircleAvatar(
+        child: CircleAvatar(
           radius: 22,
           backgroundColor: Colors.grey[200], // placeholder background
-          backgroundImage: AssetImage('assets/images/profile_placeholder.jpg'), 
-      ),
+          backgroundImage: AssetImage('assets/images/profile_placeholder.png'), 
+        ),
     );
   }
 }

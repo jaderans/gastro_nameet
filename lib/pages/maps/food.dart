@@ -81,6 +81,7 @@ class _FoodState extends State<Food> {
   List<Place> searchResults = [];
   bool isSearching = false;
   Position? currentPosition;
+  bool _isLocating = false;
 
   @override
   void initState() {
@@ -281,13 +282,31 @@ class _FoodState extends State<Food> {
     }
   }
 
-  void _onMarkerTapped(Place place) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlaceDetailsPage(place: place),
-      ),
-    );
+  void _onMarkerTapped(Place place) async {
+    // Fetch full place details (including reviews) before navigating
+    try {
+      final detailedPlace = await _placesService.getPlaceDetails(place.placeId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlaceDetailsPage(place: detailedPlace),
+        ),
+      );
+    } catch (e) {
+      // If fetching details fails, fall back to the provided place object
+      print('Error fetching place details: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not load full place details: $e')),
+        );
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlaceDetailsPage(place: place),
+        ),
+      );
+    }
   }
 
   @override
@@ -452,35 +471,54 @@ class _FoodState extends State<Food> {
                   height: 50.0,
                   width: 50.0,
                   child: FloatingActionButton(
-                    onPressed: () async {
-                      try {
-                        Position position = await _determinePosition();
-                    
-                        final controller = await _controller.future;
-                        controller.animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(position.latitude, position.longitude),
-                              zoom: 15,
-                            ),
-                          ),
-                        );
-                    
-                        setState(() {
-                          currentPosition = position;
-                        });
-                        _addCurrentLocationMarker(position);
+                    onPressed: _isLocating
+                        ? null
+                        : () async {
+                            setState(() {
+                              _isLocating = true;
+                            });
+                            try {
+                              Position position = await _determinePosition();
 
-                      } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
-                        }
-                      }
-                    },
+                              final controller = await _controller.future;
+                              controller.animateCamera(
+                                CameraUpdate.newCameraPosition(
+                                  CameraPosition(
+                                    target: LatLng(position.latitude, position.longitude),
+                                    zoom: 15,
+                                  ),
+                                ),
+                              );
+
+                              setState(() {
+                                currentPosition = position;
+                              });
+                              _addCurrentLocationMarker(position);
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: $e')),
+                                );
+                              }
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isLocating = false;
+                                });
+                              }
+                            }
+                          },
                     tooltip: 'Current Location',
-                    child: const Icon(Icons.my_location),
+                    child: _isLocating
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF7941D)),
+                            ),
+                          )
+                        : const Icon(Icons.my_location),
                   ),
                 ),
               ],
