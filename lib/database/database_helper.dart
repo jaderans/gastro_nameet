@@ -19,28 +19,27 @@ class DBHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    // Always delete existing database to get fresh copy
-    try {
-      if (await databaseExists(path)) {
-        await deleteDatabase(path);
-        print('✅ Existing database deleted');
-      }
-    } catch (e) {
-      print('⚠️ Error deleting existing database: $e');
-    }
-
-    // Try to copy from assets first
+    // Only create/copy database if it does not already exist.
     bool copiedFromAssets = false;
     try {
-      await Directory(dirname(path)).create(recursive: true);
-      ByteData data = await rootBundle.load('assets/database/$filePath');
-      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      await File(path).writeAsBytes(bytes, flush: true);
-      print('✅ Database copied from assets');
-      copiedFromAssets = true;
+      final exists = await databaseExists(path);
+      if (!exists) {
+        await Directory(dirname(path)).create(recursive: true);
+        try {
+          ByteData data = await rootBundle.load('assets/database/$filePath');
+          List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          await File(path).writeAsBytes(bytes, flush: true);
+          print('✅ Database copied from assets');
+          copiedFromAssets = true;
+        } catch (e) {
+          print('⚠️ Could not copy from assets: $e');
+          print('📝 Creating database with tables...');
+        }
+      } else {
+        print('ℹ️ Database already exists at $path — opening existing database');
+      }
     } catch (e) {
-      print('⚠️ Could not copy from assets: $e');
-      print('📝 Creating database with tables...');
+      print('⚠️ Error checking/creating database file: $e');
     }
 
     // Open database
@@ -50,11 +49,80 @@ class DBHelper {
       onCreate: _createDB,
       onOpen: (database) async {
         print('📂 Database opened successfully');
+        // Ensure all required tables exist (useful if opening an older DB without new tables)
+        await _ensureTablesExist(database);
         await _verifyAndPopulate(database, copiedFromAssets);
       },
     );
 
     return db;
+  }
+
+  // Ensure required tables exist (creates them if missing)
+  Future<void> _ensureTablesExist(Database db) async {
+    try {
+      // Use the same CREATE TABLE IF NOT EXISTS statements as in _createDB
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS USER (
+        USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        USER_NAME TEXT NOT NULL,
+        USER_EMAIL TEXT NOT NULL UNIQUE,
+        USER_PASSWORD TEXT NOT NULL,
+        USER_DATE_CREATED TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    ''');
+
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS CATEGORY (
+        CATEG_ID INTEGER PRIMARY KEY,
+        CATEG_NAME TEXT NOT NULL
+      )
+    ''');
+
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS SPECIALTY (
+        SP_ID INTEGER PRIMARY KEY,
+        SP_NAME TEXT NOT NULL,
+        SP_DESCRIPTION TEXT,
+        SP_HISTORY TEXT,
+        SP_IMG_URL TEXT,
+        CATEG_ID INTEGER,
+        FOREIGN KEY (CATEG_ID) REFERENCES CATEGORY(CATEG_ID)
+      )
+    ''');
+
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS BOOKMARK (
+        BM_ID INTEGER PRIMARY KEY,
+        BM_DATE TEXT,
+        BM_PLACE_NAME TEXT,
+        BM_ADDRESS TEXT,
+        BM_LAT REAL,
+        BM_LNG REAL,
+        BM_RATING REAL,
+        BM_IMG TEXT,
+        USER_ID INTEGER,
+        FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
+      )
+    ''');
+
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS COMMENTS (
+        REV_ID INTEGER PRIMARY KEY,
+        REV_DATE TEXT,
+        REV_DESC TEXT,
+        REV_LAT REAL,
+        REV_LNG REAL,
+        REV_PLACE_NAME TEXT,
+        USER_ID INTEGER,
+        FOREIGN KEY (USER_ID) REFERENCES USER(USER_ID)
+      )
+    ''');
+
+      print('✅ Ensured required tables exist');
+    } catch (e) {
+      print('⚠️ Error ensuring tables exist: $e');
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -162,39 +230,71 @@ class DBHelper {
 // Insert a new comment
 Future<int> insertComment(Map<String, dynamic> comment) async {
   final db = await database;
-  return await db.insert('COMMENTS', comment);
+  try {
+    return await db.insert('COMMENTS', comment);
+  } catch (e) {
+    // If table is missing, attempt to create tables and retry once
+    print('⚠️ insertComment failed: $e');
+    if (e.toString().toLowerCase().contains('no such table')) {
+      try {
+        await _ensureTablesExist(db);
+        return await db.insert('COMMENTS', comment);
+      } catch (e2) {
+        print('⚠️ Retry insertComment failed: $e2');
+        rethrow;
+      }
+    }
+    rethrow;
+  }
 }
 
 // Get all comments
 Future<List<Map<String, dynamic>>> getAllComments() async {
   final db = await database;
-  return await db.query(
-    'COMMENTS',
-    orderBy: 'REV_DATE DESC',
-  );
+  // Return comments along with the user's name via LEFT JOIN
+  return await db.rawQuery('''
+    SELECT c.*, u.USER_NAME AS USER_NAME
+    FROM COMMENTS c
+    LEFT JOIN USER u ON c.USER_ID = u.USER_ID
+    ORDER BY REV_DATE DESC
+  ''');
 }
 
 // Get comments by user ID
 Future<List<Map<String, dynamic>>> getCommentsByUser(int userId) async {
   final db = await database;
-  return await db.query(
-    'COMMENTS',
-    where: 'USER_ID = ?',
-    whereArgs: [userId],
-    orderBy: 'REV_DATE DESC',
-  );
+  return await db.rawQuery('''
+    SELECT c.*, u.USER_NAME AS USER_NAME
+    FROM COMMENTS c
+    LEFT JOIN USER u ON c.USER_ID = u.USER_ID
+    WHERE c.USER_ID = ?
+    ORDER BY REV_DATE DESC
+  ''', [userId]);
 }
 
 // Get comments by place name
 Future<List<Map<String, dynamic>>> getCommentsByPlace(String placeName) async {
-  final db = await database;
-  return await db.query(
-    'COMMENTS',
-    where: 'REV_PLACE_NAME = ?',
-    whereArgs: [placeName],
-    orderBy: 'REV_DATE DESC',
-  );
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT c.*, u.USER_NAME AS USER_NAME
+      FROM COMMENTS c
+      LEFT JOIN USER u ON c.USER_ID = u.USER_ID
+      WHERE c.REV_PLACE_NAME = ?
+      ORDER BY REV_DATE DESC
+    ''', [placeName]);
 }
+
+  // Get comments by place name filtered by user id (optional)
+  Future<List<Map<String, dynamic>>> getCommentsByPlaceForUser(String placeName, int userId) async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT c.*, u.USER_NAME AS USER_NAME
+      FROM COMMENTS c
+      LEFT JOIN USER u ON c.USER_ID = u.USER_ID
+      WHERE c.REV_PLACE_NAME = ? AND c.USER_ID = ?
+      ORDER BY REV_DATE DESC
+    ''', [placeName, userId]);
+  }
 
 // Update a comment
 Future<int> updateComment(int revId, Map<String, dynamic> comment) async {
@@ -226,6 +326,16 @@ Future<int> deleteComment(int revId) async {
   Future<List<Map<String, dynamic>>> getAllBookmarks() async {
     final db = await instance.database;
     return await db.query('BOOKMARK');
+  }
+
+  // Get bookmarks for a specific user
+  Future<List<Map<String, dynamic>>> getBookmarksByUser(int userId) async {
+    final db = await instance.database;
+    return await db.query(
+      'BOOKMARK',
+      where: 'USER_ID = ?',
+      whereArgs: [userId],
+    );
   }
 
   Future<int> deleteBookmark(int bmId) async {

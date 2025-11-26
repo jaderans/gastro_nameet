@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
+import 'package:gastro_nameet/services/auth_service.dart';
 import '../../models/place.dart';
 import '../../services/places_service.dart';
 
@@ -17,13 +18,26 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   late TextEditingController _commentController;
   bool _isSaved = false;
   List<Map<String, dynamic>> _userComments = [];
+  int? _currentUserId;
 
   @override
   void initState() {
     super.initState();
     _commentController = TextEditingController();
-    _checkIfBookmarked();
-    _loadUserComments();
+    // Load current user first, then load user-specific data
+    _loadCurrentUser().then((_) async {
+      await _checkIfBookmarked();
+      await _loadUserComments();
+    });
+  }
+
+  Future<void> _loadCurrentUser() async {
+    try {
+      _currentUserId = await AuthService.instance.getCurrentUserId();
+      setState(() {});
+    } catch (e) {
+      print('Error loading current user: $e');
+    }
   }
 
   @override
@@ -34,11 +48,14 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
   Future<void> _checkIfBookmarked() async {
     try {
-      final bookmarks = await DBHelper.instance.getAllBookmarks();
+      if (_currentUserId == null) {
+        setState(() => _isSaved = false);
+        return;
+      }
+
+      final bookmarks = await DBHelper.instance.getBookmarksByUser(_currentUserId!);
       final exists = bookmarks.any((bm) => bm['BM_PLACE_NAME'] == widget.place.name);
-      setState(() {
-        _isSaved = exists;
-      });
+      setState(() => _isSaved = exists);
     } catch (e) {
       print('Error checking bookmark: $e');
     }
@@ -46,10 +63,15 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
 
   Future<void> _loadUserComments() async {
     try {
-      final comments = await DBHelper.instance.getCommentsByPlace(widget.place.name);
-      setState(() {
-        _userComments = comments;
-      });
+      if (_currentUserId == null) {
+        setState(() {
+          _userComments = [];
+        });
+        return;
+      }
+
+      final comments = await DBHelper.instance.getCommentsByPlaceForUser(widget.place.name, _currentUserId!);
+      setState(() => _userComments = comments);
       print('Loaded ${comments.length} user comments for ${widget.place.name}');
     } catch (e) {
       print('Error loading user comments: $e');
@@ -59,13 +81,14 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   Future<void> _toggleBookmark() async {
     try {
       if (_isSaved) {
-        // Delete bookmark
-        final bookmarks = await DBHelper.instance.getAllBookmarks();
+        // Delete bookmark for current user
+        if (_currentUserId == null) return;
+        final bookmarks = await DBHelper.instance.getBookmarksByUser(_currentUserId!);
         final bookmark = bookmarks.firstWhere(
           (bm) => bm['BM_PLACE_NAME'] == widget.place.name,
           orElse: () => {},
         );
-        
+
         if (bookmark.isNotEmpty) {
           await DBHelper.instance.deleteBookmark(bookmark['BM_ID']);
           setState(() {
@@ -79,14 +102,28 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
         }
       } else {
         // Save bookmark
-        await DBHelper.instance.insertBookmark({
+        if (_currentUserId == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please sign in to save bookmarks')),
+            );
+          }
+          return;
+        }
+        final bookmarkRow = {
           'BM_PLACE_NAME': widget.place.name,
           'BM_ADDRESS': widget.place.address,
           'BM_LAT': widget.place.latitude,
           'BM_LNG': widget.place.longitude,
           'BM_RATING': widget.place.rating,
           'BM_DATE': DateTime.now().toString(),
-        });
+        };
+
+        if (_currentUserId != null) {
+          bookmarkRow['USER_ID'] = _currentUserId!;
+        }
+
+        await DBHelper.instance.insertBookmark(bookmarkRow);
         setState(() {
           _isSaved = true;
         });
@@ -171,15 +208,29 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
       return;
     }
 
+    if (_currentUserId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please sign in to post comments')),
+        );
+      }
+      return;
+    }
+
     try {
-      final result = await DBHelper.instance.insertComment({
+      final commentRow = {
         'REV_DATE': DateTime.now().toIso8601String(),
         'REV_DESC': _commentController.text.trim(),
         'REV_LAT': widget.place.latitude,
         'REV_LNG': widget.place.longitude,
         'REV_PLACE_NAME': widget.place.name,
-        'USER_ID': 1, // Replace with actual user ID from your auth system
-      });
+      };
+
+      if (_currentUserId != null) {
+        commentRow['USER_ID'] = _currentUserId!;
+      }
+
+      final result = await DBHelper.instance.insertComment(commentRow);
 
       print('Comment saved with ID: $result');
       print('Place: ${widget.place.name}, Comment: ${_commentController.text.trim()}');
@@ -599,7 +650,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                           Row(
                                             children: [
                                               Text(
-                                                'User #${comment['USER_ID']}',
+                                                (comment['USER_NAME'] as String?) ?? 'User #${comment['USER_ID']}',
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14,
@@ -629,7 +680,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                                       ),
                                     ),
                                     // Edit and Delete buttons for user's own comments
-                                    if (comment['USER_ID'] == 1) // Check if it's current user's comment
+                                    if (_currentUserId != null && comment['USER_ID'] == _currentUserId) // Check if it's current user's comment
                                       Row(
                                         children: [
                                           IconButton(

@@ -43,7 +43,7 @@ class PlacesService {
   // Get place details
   Future<Place> getPlaceDetails(String placeId) async {
     final url = Uri.parse(
-      '$baseUrl/details/json?place_id=$placeId&fields=name,formatted_address,formatted_phone_number,website,rating,opening_hours,geometry,photos,types&key=$apiKey',
+      '$baseUrl/details/json?place_id=$placeId&fields=place_id,name,formatted_address,formatted_phone_number,website,rating,opening_hours,geometry,photos,types,reviews,user_ratings_total&key=$apiKey',
     );
 
     try {

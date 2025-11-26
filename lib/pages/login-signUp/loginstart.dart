@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gastro_nameet/layouts/main_bottom_nav_bar.dart';
 import 'package:gastro_nameet/pages/home/startscreen.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
+import 'package:gastro_nameet/services/auth_service.dart';
 
 class loginstart extends StatefulWidget {
   const loginstart({super.key});
@@ -163,6 +164,13 @@ class _loginstartState extends State<loginstart> {
                           final user = await DBHelper.instance.loginUser(email, password);
 
                           if (user != null) {
+                            // Persist current user
+                            await AuthService.instance.setCurrentUser(
+                              userId: user['USER_ID'] as int,
+                              name: user['USER_NAME'] as String?,
+                              email: user['USER_EMAIL'] as String?,
+                            );
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Welcome, ${user['USER_NAME']}!")),
                             );
