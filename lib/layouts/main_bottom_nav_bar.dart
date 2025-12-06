@@ -3,7 +3,7 @@ import '../components/bottom_nav_bar.dart';
 import '../pages/home/homescreen.dart';
 import '../pages/maps/food.dart';
 import '../pages/activities/bookmark_display.dart';
-import '../pages/events/notifications.dart';
+import '../pages/events/events.dart';
 import '../pages/activities/comments_display.dart';
 
 
@@ -21,7 +21,7 @@ class _MainNavigationState extends State<MainNavigation> {
     Home(),
     Food(),
     Bookmark(),
-    NotificationsScreen(),
+    Events(),
   ];
 
   void _onItemTapped(int index) {
