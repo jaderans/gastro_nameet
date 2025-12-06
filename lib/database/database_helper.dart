@@ -19,24 +19,29 @@ class DBHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    // Only create/copy database if it does not already exist.
+    print('🔍 Database path: $path');
+
+    // Delete existing database to refresh from assets
     bool copiedFromAssets = false;
     try {
       final exists = await databaseExists(path);
-      if (!exists) {
-        await Directory(dirname(path)).create(recursive: true);
-        try {
-          ByteData data = await rootBundle.load('assets/database/$filePath');
-          List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-          await File(path).writeAsBytes(bytes, flush: true);
-          print('✅ Database copied from assets');
-          copiedFromAssets = true;
-        } catch (e) {
-          print('⚠️ Could not copy from assets: $e');
-          print('📝 Creating database with tables...');
-        }
-      } else {
-        print('ℹ️ Database already exists at $path — opening existing database');
+      if (exists) {
+        print('🔄 Deleting old cached database to refresh from assets...');
+        await deleteDatabase(path);
+      }
+      
+      // Copy fresh database from assets
+      await Directory(dirname(path)).create(recursive: true);
+      try {
+        ByteData data = await rootBundle.load('assets/database/$filePath');
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        print('📦 Asset database size: ${bytes.length} bytes');
+        await File(path).writeAsBytes(bytes, flush: true);
+        print('✅ Database copied from assets (fresh copy)');
+        copiedFromAssets = true;
+      } catch (e) {
+        print('⚠️ Could not copy from assets: $e');
+        print('📝 Creating database with tables...');
       }
     } catch (e) {
       print('⚠️ Error checking/creating database file: $e');
@@ -120,6 +125,18 @@ class DBHelper {
       )
     ''');
 
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS EVENTS (
+        EV_ID INTEGER PRIMARY KEY,
+        EV_NAME TEXT NOT NULL,
+        EV_DESCRIPTION TEXT,
+        EV_DATE TEXT,
+        EV_LOCATION TEXT,
+        EV_ESTABLISHMENT TEXT,
+        EV_IMG_URL TEXT
+      )
+    ''');
+
       // Ensure COMMENTS table has REV_IMG column for older databases
       try {
         final commentCols = await db.rawQuery("PRAGMA table_info('COMMENTS')");
@@ -190,6 +207,18 @@ class DBHelper {
     ''');
 
       await db.execute('''
+      CREATE TABLE IF NOT EXISTS EVENTS (
+        EV_ID INTEGER PRIMARY KEY,
+        EV_NAME TEXT NOT NULL,
+        EV_DESCRIPTION TEXT,
+        EV_DATE TEXT,
+        EV_LOCATION TEXT,
+        EV_ESTABLISHMENT TEXT,
+        EV_IMG_URL TEXT
+      )
+    ''');
+
+      await db.execute('''
       CREATE TABLE IF NOT EXISTS COMMENTS (
         REV_ID INTEGER PRIMARY KEY,
         REV_DATE TEXT,
@@ -246,6 +275,17 @@ class DBHelper {
         await db.rawQuery('SELECT COUNT(*) FROM USER')
       );
       print('👤 USER table has $userCount records');
+
+      final eventCount = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM EVENTS')
+      );
+      print('📅 EVENTS table has $eventCount records');
+
+      // List all tables
+      final allTables = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+      );
+      print('📋 Available tables: ${allTables.map((t) => t['name']).toList()}');
     } catch (e) {
       print('⚠️ Error verifying database: $e');
     }
@@ -546,6 +586,61 @@ Future<int> deleteComment(int revId) async {
       await db.insert('SPECIALTY', specialty, conflictAlgorithm: ConflictAlgorithm.replace);
     }
     print('✅ Inserted ${specialties.length} specialties');
+
+    // Insert Events
+    final events = [
+      {
+        'EV_ID': 1,
+        'EV_NAME': 'Iloilo Food Festival 2025',
+        'EV_DESCRIPTION': 'Celebrate Iloilo\'s culinary heritage with traditional dishes, cooking demonstrations, and food tastings from local restaurants.',
+        'EV_DATE': '2025-03-15',
+        'EV_LOCATION': 'Iloilo City Convention Center',
+        'EV_ESTABLISHMENT': 'Iloilo City Government',
+        'EV_IMG_URL': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKrlBm_SN-O2aFKhXNIUFeaTbkWrewASUl4w&s',
+      },
+          {
+      "EV_ID": 3,
+      "EV_NAME": "Visayas Street Food Fiesta",
+      "EV_DESCRIPTION": "A vibrant showcase of Visayan street food favorites like batchoy, kansi, chicken inasal, and local desserts prepared by small vendors and culinary students.",
+      "EV_DATE": "2025-04-05",
+      "EV_LOCATION": "SM City Iloilo Southpoint",
+      "EV_ESTABLISHMENT": "Department of Tourism VI",
+      "EV_IMG_URL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkBlF4Oq57EpayZ9FLIrJX2kKc-3YDiUaojg&s"
+    },
+    {
+      "EV_ID": 4,
+      "EV_NAME": "Heritage Recipes Expo",
+      "EV_DESCRIPTION": "A food expo featuring heirloom Ilonggo dishes, recipe storytelling sessions, and tastings curated by culinary historians and home cooks.",
+      "EV_DATE": "2025-05-18",
+      "EV_LOCATION": "Museo Iloilo",
+      "EV_ESTABLISHMENT": "National Commission for Culture and the Arts",
+      "EV_IMG_URL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWxPyvhZJ7e_n7z1uPd2BHS3ok8bUXY3pzxg&s"
+    },
+    {
+      "EV_ID": 5,
+      "EV_NAME": "Sweet Iloilo Dessert Fair",
+      "EV_DESCRIPTION": "A dessert-focused event offering bibingka, butterscotch bars, tsokolate, and modern pastries crafted by Ilonggo bakers and cafés.",
+      "EV_DATE": "2025-06-01",
+      "EV_LOCATION": "Festive Walk Iloilo",
+      "EV_ESTABLISHMENT": "Megaworld Iloilo",
+      "EV_IMG_URL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkVx7IACdxcV4uNrbJKi9Gswpj_85E40p2ig&s"
+    },
+    {
+      "EV_ID": 6,
+      "EV_NAME": "Farm-to-Table Organic Food Market",
+      "EV_DESCRIPTION": "An open-air market offering organic produce, fresh herbs, artisan breads, and healthy meals straight from farmers and local kitchens.",
+      "EV_DATE": "2025-07-12",
+      "EV_LOCATION": "Iloilo Provincial Capitol Grounds",
+      "EV_ESTABLISHMENT": "Department of Agriculture VI",
+      "EV_IMG_URL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdbc0O0xQcuIUGn-MNocn20szQ-9_LlMrNuA&s"
+    }
+    
+    ];
+
+    for (var event in events) {
+      await db.insert('EVENTS', event, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    print('✅ Inserted ${events.length} events');
   }
 
   // Insert user
@@ -716,4 +811,56 @@ Future<int> deleteComment(int revId) async {
       print('❌ Error printing categories: $e');
     }
   }
+
+  // Get all events
+  Future<List<Map<String, dynamic>>> getAllEvents() async {
+    final db = await instance.database;
+    try {
+      // Check if EVENTS table exists
+      final tableCheckResult = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='EVENTS'"
+      );
+      
+      if (tableCheckResult.isEmpty) {
+        print('❌ EVENTS table does not exist!');
+        return [];
+      }
+      
+      // Get all columns in EVENTS table
+      final columnsResult = await db.rawQuery("PRAGMA table_info('EVENTS')");
+      final columns = columnsResult.map((c) => c['name']).toList();
+      print('📊 EVENTS table columns: $columns');
+      
+      // Fetch events
+      final events = await db.query('EVENTS', orderBy: 'EV_DATE DESC');
+      print('✅ Fetched ${events.length} events from EVENTS table');
+      
+      for (var i = 0; i < events.length; i++) {
+        print('📌 Event $i: ${events[i]}');
+      }
+      
+      return events;
+    } catch (e) {
+      print('❌ Error getting all events: $e');
+      print('❌ Stack trace: ${e.toString()}');
+      return [];
+    }
+  }
+
+  // Get event by ID
+  Future<Map<String, dynamic>?> getEventById(int eventId) async {
+    final db = await instance.database;
+    try {
+      final result = await db.query(
+        'EVENTS',
+        where: 'EV_ID = ?',
+        whereArgs: [eventId],
+      );
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      print('❌ Error getting event by ID: $e');
+      return null;
+    }
+  }
+
 }
