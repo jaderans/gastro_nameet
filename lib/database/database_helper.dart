@@ -863,4 +863,21 @@ Future<int> deleteComment(int revId) async {
     }
   }
 
+  // Get events by location (partial match)
+  Future<List<Map<String, dynamic>>> getEventsByLocation(String location) async {
+    final db = await instance.database;
+    try {
+      final result = await db.query(
+        'EVENTS',
+        where: "EV_LOCATION LIKE ?",
+        whereArgs: ['%$location%'],
+        orderBy: 'EV_DATE ASC',
+      );
+      return result;
+    } catch (e) {
+      print('❌ Error getting events by location: $e');
+      return [];
+    }
+  }
+
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gastro_nameet/database/database_helper.dart';
-import 'package:gastro_nameet/components/profile_button.dart';
+import 'package:gastro_nameet/pages/maps/food.dart';
 
 class Events extends StatefulWidget {
   const Events({super.key});
@@ -42,6 +42,21 @@ class _EventsState extends State<Events> {
     }
     
     return sorted;
+  }
+
+  void _navigateToEventLocation(String location) {
+    // Navigate to the Food maps page with the event location
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Food(),
+        settings: RouteSettings(
+          arguments: {
+            'searchQuery': location,
+          },
+        ),
+      ),
+    );
   }
 
   void _showEventDetails(Map<String, dynamic> event) {
@@ -168,6 +183,20 @@ class _EventsState extends State<Events> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Close'),
           ),
+          if (event['EV_LOCATION'] != null &&
+              (event['EV_LOCATION'] as String).isNotEmpty)
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                _navigateToEventLocation(event['EV_LOCATION']);
+              },
+              icon: const Icon(Icons.map),
+              label: const Text('View on Map'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: accentColor,
+                foregroundColor: Colors.white,
+              ),
+            ),
         ],
       ),
     );
