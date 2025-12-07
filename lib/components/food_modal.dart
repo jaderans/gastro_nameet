@@ -41,7 +41,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
     try {
       final db = await DBHelper.instance.database;
 
-      // Get food data
+      // Get all specialties with the same name (to handle multiple categories)
       final result = await db.query(
         'SPECIALTY',
         where: 'SP_ID = ?',
@@ -51,12 +51,27 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
       if (result.isNotEmpty) {
         final food = result.first;
 
-        // Get category name if CATEG_ID exists
-        if (food['CATEG_ID'] != null) {
+        // Get all categories for this food item (same name across different categories)
+        final allInstancesResult = await db.query(
+          'SPECIALTY',
+          where: 'SP_NAME = ?',
+          whereArgs: [food['SP_NAME']],
+        );
+
+        // Collect all unique category IDs for this food
+        Set<int> categoryIds = {};
+        for (var instance in allInstancesResult) {
+          if (instance['CATEG_ID'] != null) {
+            categoryIds.add(instance['CATEG_ID'] as int);
+          }
+        }
+
+        // Fetch category names for all category IDs
+        for (var categoryId in categoryIds) {
           final categoryResult = await db.query(
             'CATEGORY',
             where: 'CATEG_ID = ?',
-            whereArgs: [food['CATEG_ID']],
+            whereArgs: [categoryId],
           );
 
           if (categoryResult.isNotEmpty) {
@@ -135,6 +150,26 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
     );
   }
 
+  IconData _getCategoryIcon(String categoryName) {
+    switch (categoryName.toLowerCase()) {
+      case 'breakfast':
+        return Icons.free_breakfast;
+      case 'lunch':
+        return Icons.lunch_dining;
+      case 'dinner':
+        return Icons.dinner_dining;
+      case 'snacks':
+        return Icons.fastfood;
+      case 'soup':
+        return Icons.ramen_dining;
+      case 'dessert':
+      case 'desserts':
+        return Icons.icecream;
+      default:
+        return Icons.local_dining;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -199,8 +234,6 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                                       _buildTitleSection(),
                                       SizedBox(height: 16),
                                       _buildCategorySection(),
-                                      SizedBox(height: 24),
-                                      _buildActionButtons(),
                                       SizedBox(height: 24),
                                       _buildDescriptionSection(),
                                       SizedBox(height: 24),
@@ -406,7 +439,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.local_dining, size: 14, color: Colors.white),
+              Icon(_getCategoryIcon(category), size: 14, color: Colors.white),
               SizedBox(width: 6),
               Text(
                 category,
@@ -421,67 +454,6 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // Add to favorites or meal plan
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Added to meal plan!', style: TextStyle(fontFamily: 'Poppins')),
-                  backgroundColor: Color(0xFFFFA726),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.all(16),
-                ),
-              );
-            },
-            icon: Icon(Icons.add_circle_outline, size: 20),
-            label: Text('Add to Plan', style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFFFA726),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-          ),
-        ),
-        SizedBox(width: 12),
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () {
-              // View recipe or cooking instructions
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Recipe coming soon!', style: TextStyle(fontFamily: 'Poppins')),
-                  backgroundColor: Color(0xFF666666),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  margin: EdgeInsets.all(16),
-                ),
-              );
-            },
-            icon: Icon(Icons.menu_book, size: 20),
-            label: Text('Recipe', style: TextStyle(fontFamily: 'Poppins', fontSize: 14)),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Color(0xFFFFA726),
-              side: BorderSide(color: Color(0xFFFFA726), width: 2),
-              padding: EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 

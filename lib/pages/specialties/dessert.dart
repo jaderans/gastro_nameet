@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:gastro_nameet/database/database_helper.dart';
+import 'package:gastro_nameet/components/food_modal.dart';
 
 class spdessert extends StatefulWidget {
   const spdessert({super.key});
 
   @override
-  State<spdessert> createState() => __spdesserStateState();
+  State<spdessert> createState() => _spdessertState();
 }
 
-class __spdesserStateState extends State<spdessert> {
+class _spdessertState extends State<spdessert> {
+  List<Map<String, dynamic>> dessertItems = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDessertItems();
+  }
+
+  Future<void> loadDessertItems() async {
+    try {
+      final db = await DBHelper.instance.database;
+
+      // Query to get dessert items (CATEG_ID 6 based on your data)
+      final result = await db.query(
+        'SPECIALTY',
+        where: 'CATEG_ID = ?',
+        whereArgs: [6],
+      );
+
+      setState(() {
+        dessertItems = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading dessert items: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,10 +50,10 @@ class __spdesserStateState extends State<spdessert> {
         title: Row(children: [
           Padding(
             padding: const EdgeInsets.only(right:5),
-            child: Icon(Icons.fastfood, color: Color(0xFFFFA726)),
+            child: Icon(Icons.icecream, color: Color(0xFFFFA726)),
           ),
           Text(
-            'Snacks Specialties',
+            'Dessert Specialties',
             style: TextStyle(
               fontFamily: 'Talina',
               fontWeight: FontWeight.w100,
@@ -28,7 +62,185 @@ class __spdesserStateState extends State<spdessert> {
           ),
         ],
       ),
-      )
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator(color: Color(0xFFFFA726)))
+          : dessertItems.isEmpty
+              ? Center(
+                  child: Text(
+                    'No dessert items found',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      color: Color(0xFF666666),
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: dessertItems.length,
+                    itemBuilder: (context, index) {
+                      final item = dessertItems[index];
+                      return FoodGridItem(
+                        spId: item['SP_ID'],
+                        imagePath: item['SP_IMG_URL'] ?? '',
+                        name: item['SP_NAME'] ?? 'Unknown',
+                        description: item['SP_DESCRIPTION'] ?? '',
+                      );
+                    },
+                  ),
+                ),
+    );
+  }
+}
+
+class FoodGridItem extends StatelessWidget {
+  final int spId;
+  final String imagePath;
+  final String name;
+  final String description;
+
+  const FoodGridItem({
+    Key? key,
+    required this.spId,
+    required this.imagePath,
+    required this.name,
+    required this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => FoodModal(spId: spId),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 113, 101, 89).withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image section
+            Expanded(
+              flex: 3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
+                ),
+                child: imagePath.startsWith('http')
+                    ? Image.network(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Color(0xFFE0E0E0),
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 50,
+                              color: Color(0xFFFFA726),
+                            ),
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Color(0xFFE0E0E0),
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 50,
+                              color: Color(0xFFFFA726),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ),
+            // Content section
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Color(0xFF333333),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4),
+                    Expanded(
+                      child: Text(
+                        description,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 10,
+                          color: Color(0xFF666666),
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'see more',
+                          style: TextStyle(
+                            color: Color(0xFFFFA726),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 2),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Color(0xFFFFA726),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

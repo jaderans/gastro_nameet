@@ -46,27 +46,22 @@ class _spsoupState extends State<spsoup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 55,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        title: Row(children: [
+          Padding(
+            padding: const EdgeInsets.only(right:5),
+            child: Icon(Icons.ramen_dining, color: Color(0xFFFFA726)),
           ),
-        ),
-        backgroundColor: Color(0xFFFFA726),
-        title: Text(
-          'Soup',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            color: Colors.white,
+          Text(
+            'Soup Specialties',
+            style: TextStyle(
+              fontFamily: 'Talina',
+              fontWeight: FontWeight.w100,
+              color: Color(0xFFFFA726),
+            ),
           ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        ],
+      ),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator(color: Color(0xFFFFA726)))
