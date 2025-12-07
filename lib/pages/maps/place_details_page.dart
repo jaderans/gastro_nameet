@@ -18,6 +18,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
   late TextEditingController _commentController;
   bool _isSaved = false;
   List<Map<String, dynamic>> _userComments = [];
+  List<Map<String, dynamic>> _relatedEvents = [];
   int? _currentUserId;
 
   @override
@@ -28,6 +29,7 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
     _loadCurrentUser().then((_) async {
       await _checkIfBookmarked();
       await _loadUserComments();
+      await _loadRelatedEvents();
     });
   }
 
@@ -75,6 +77,16 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
       print('Loaded ${comments.length} user comments for ${widget.place.name}');
     } catch (e) {
       print('Error loading user comments: $e');
+    }
+  }
+
+  Future<void> _loadRelatedEvents() async {
+    try {
+      final events = await DBHelper.instance.getEventsByLocation(widget.place.name);
+      setState(() => _relatedEvents = events);
+      print('Loaded ${events.length} events related to ${widget.place.name}');
+    } catch (e) {
+      print('Error loading related events: $e');
     }
   }
 
@@ -833,6 +845,93 @@ class _PlaceDetailsPageState extends State<PlaceDetailsPage> {
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Related Events Section
+                  if (_relatedEvents.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Events at this Location',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF7941D),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '${_relatedEvents.length}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _relatedEvents.length,
+                          itemBuilder: (context, index) {
+                            final event = _relatedEvents[index];
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Event Name
+                                    Text(
+                                      event['EV_NAME'] ?? 'Event',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Event Date
+                                    if (event['EV_DATE'] != null)
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.calendar_today, size: 16, color: Color(0xFFF7941D)),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            event['EV_DATE'],
+                                            style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                                          ),
+                                        ],
+                                      ),
+                                    if (event['EV_DESCRIPTION'] != null && event['EV_DESCRIPTION'].toString().isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          event['EV_DESCRIPTION'],
+                                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
                 ],
               ),
             ),
