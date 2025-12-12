@@ -233,11 +233,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             // Account Info Card
-                            _buildInfoCard(
-                              icon: Icons.badge_outlined,
-                              title: 'User ID',
-                              value: '${_user!['USER_ID']}',
-                            ),
+                            // _buildInfoCard(
+                            //   icon: Icons.badge_outlined,
+                            //   title: 'User ID',
+                            //   value: '${_user!['USER_ID']}',
+                            // ),
                             const SizedBox(height: 12),
                             _buildInfoCard(
                               icon: Icons.email_outlined,
