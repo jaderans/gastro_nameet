@@ -21,27 +21,27 @@ class DBHelper {
 
     print('🔍 Database path: $path');
 
-    // Delete existing database to refresh from assets
+    // Only copy the bundled asset database if the DB file does NOT exist.
+    // Removing deletion of existing DB so user-created data persists across app restarts.
     bool copiedFromAssets = false;
     try {
       final exists = await databaseExists(path);
-      if (exists) {
-        print('🔄 Deleting old cached database to refresh from assets...');
-        await deleteDatabase(path);
-      }
-      
-      // Copy fresh database from assets
-      await Directory(dirname(path)).create(recursive: true);
-      try {
-        ByteData data = await rootBundle.load('assets/database/$filePath');
-        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-        print('📦 Asset database size: ${bytes.length} bytes');
-        await File(path).writeAsBytes(bytes, flush: true);
-        print('✅ Database copied from assets (fresh copy)');
-        copiedFromAssets = true;
-      } catch (e) {
-        print('⚠️ Could not copy from assets: $e');
-        print('📝 Creating database with tables...');
+      if (!exists) {
+        // Create folder then try to copy database from assets
+        await Directory(dirname(path)).create(recursive: true);
+        try {
+          ByteData data = await rootBundle.load('assets/database/$filePath');
+          List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          print('📦 Asset database size: ${bytes.length} bytes');
+          await File(path).writeAsBytes(bytes, flush: true);
+          print('✅ Database copied from assets');
+          copiedFromAssets = true;
+        } catch (e) {
+          // If we can't copy the prepackaged DB, we'll let openDatabase create tables via onCreate
+          print('⚠️ Could not copy from assets (will create empty DB instead): $e');
+        }
+      } else {
+        print('ℹ️ Database already exists at $path — preserving existing data');
       }
     } catch (e) {
       print('⚠️ Error checking/creating database file: $e');
